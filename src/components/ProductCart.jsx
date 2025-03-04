@@ -1,136 +1,152 @@
-'use client'
+// Cart.js
 
-import { useState } from 'react'
-import { Dialog, DialogBackdrop, DialogPanel, DialogTitle } from '@headlessui/react'
-import { XMarkIcon } from '@heroicons/react/24/outline'
+import { useState } from "react";
 
-const products = [
-  {
-    id: 1,
-    name: 'Throwback Hip Bag',
-    href: '#',
-    color: 'Salmon',
-    price: '$90.00',
-    quantity: 1,
-    imageSrc: 'https://tailwindui.com/plus-assets/img/ecommerce-images/shopping-cart-page-04-product-01.jpg',
-    imageAlt: 'Salmon orange fabric pouch with match zipper, gray zipper pull, and adjustable hip belt.',
-  },
-  {
-    id: 2,
-    name: 'Medium Stuff Satchel',
-    href: '#',
-    color: 'Blue',
-    price: '$32.00',
-    quantity: 1,
-    imageSrc: 'https://tailwindui.com/plus-assets/img/ecommerce-images/shopping-cart-page-04-product-02.jpg',
-    imageAlt:
-      'Front of satchel with blue canvas body, black straps and handle, drawstring top, and front zipper pouch.',
-  },
-]
 
-export default function ProductCart() {
-  const [open, setOpen] = useState(true)
+const ProductCart = () => {
+  // Sample cart items data
+  const [cartItems, setCartItems] = useState([
+    {
+      id: 1,
+      name: 'Áo Thun Basic',
+      price: 250000,
+      quantity: 1,
+      image: 'https://via.placeholder.com/100',
+      checked: false
+    },
+    {
+      id: 2,
+      name: 'Quần Jeans Slim',
+      price: 450000,
+      quantity: 1,
+      image: 'https://via.placeholder.com/100',
+      checked: false
+    }
+  ]);
+
+  // State for select all checkbox
+  const [selectAll, setSelectAll] = useState(false);
+
+  // Calculate totals
+  const calculateTotal = () => {
+    return cartItems.reduce((total, item) => {
+      return item.checked ? total + item.price * item.quantity : total;
+    }, 0);
+  };
+
+  const totalQuantity = () => {
+    return cartItems.reduce((total, item) => {
+      return item.checked ? total + item.quantity : total;
+    }, 0);
+  };
+
+  // Handle quantity change
+  const handleQuantityChange = (id, change) => {
+    setCartItems(cartItems.map(item => {
+      if (item.id === id) {
+        const newQuantity = Math.max(1, item.quantity + change);
+        return { ...item, quantity: newQuantity };
+      }
+      return item;
+    }));
+  };
+
+  // Handle individual checkbox
+  const handleItemCheck = (id) => {
+    setCartItems(cartItems.map(item => {
+      if (item.id === id) {
+        return { ...item, checked: !item.checked };
+      }
+      return item;
+    }));
+  };
+
+  // Handle select all
+  const handleSelectAll = () => {
+    setSelectAll(!selectAll);
+    setCartItems(cartItems.map(item => ({
+      ...item,
+      checked: !selectAll
+    })));
+  };
+
+  // Format price to VND
+  const formatPrice = (price) => {
+    return price.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
+  };
 
   return (
-    <Dialog open={open} onClose={setOpen} className="relative z-10">
-      <DialogBackdrop
-        transition
-        className="fixed inset-0 bg-gray-500/75 transition-opacity duration-500 ease-in-out data-closed:opacity-0"
-      />
-
-      <div className="fixed inset-0 overflow-hidden">
-        <div className="absolute inset-0 overflow-hidden">
-          <div className="pointer-events-none fixed inset-y-0 right-0 flex max-w-full pl-10">
-            <DialogPanel
-              transition
-              className="pointer-events-auto w-screen max-w-md transform transition duration-500 ease-in-out data-closed:translate-x-full sm:duration-700"
-            >
-              <div className="flex h-full flex-col overflow-y-scroll bg-white shadow-xl">
-                <div className="flex-1 overflow-y-auto px-4 py-6 sm:px-6">
-                  <div className="flex items-start justify-between">
-                    <DialogTitle className="text-lg font-medium text-gray-900">Shopping cart</DialogTitle>
-                    <div className="ml-3 flex h-7 items-center">
-                      <button
-                        type="button"
-                        onClick={() => setOpen(false)}
-                        className="relative -m-2 p-2 text-gray-400 hover:text-gray-500"
-                      >
-                        <span className="absolute -inset-0.5" />
-                        <span className="sr-only">Close panel</span>
-                        <XMarkIcon aria-hidden="true" className="size-6" />
-                      </button>
-                    </div>
-                  </div>
-
-                  <div className="mt-8">
-                    <div className="flow-root">
-                      <ul role="list" className="-my-6 divide-y divide-gray-200">
-                        {products.map((product) => (
-                          <li key={product.id} className="flex py-6">
-                            <div className="size-24 shrink-0 overflow-hidden rounded-md border border-gray-200">
-                              <img alt={product.imageAlt} src={product.imageSrc} className="size-full object-cover" />
-                            </div>
-
-                            <div className="ml-4 flex flex-1 flex-col">
-                              <div>
-                                <div className="flex justify-between text-base font-medium text-gray-900">
-                                  <h3>
-                                    <a href={product.href}>{product.name}</a>
-                                  </h3>
-                                  <p className="ml-4">{product.price}</p>
-                                </div>
-                                <p className="mt-1 text-sm text-gray-500">{product.color}</p>
-                              </div>
-                              <div className="flex flex-1 items-end justify-between text-sm">
-                                <p className="text-gray-500">Qty {product.quantity}</p>
-
-                                <div className="flex">
-                                  <button type="button" className="font-medium text-indigo-600 hover:text-indigo-500">
-                                    Remove
-                                  </button>
-                                </div>
-                              </div>
-                            </div>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="border-t border-gray-200 px-4 py-6 sm:px-6">
-                  <div className="flex justify-between text-base font-medium text-gray-900">
-                    <p>Subtotal</p>
-                    <p>$262.00</p>
-                  </div>
-                  <p className="mt-0.5 text-sm text-gray-500">Shipping and taxes calculated at checkout.</p>
-                  <div className="mt-6">
-                    <a
-                      href="#"
-                      className="flex items-center justify-center rounded-md border border-transparent bg-indigo-600 px-6 py-3 text-base font-medium text-white shadow-xs hover:bg-indigo-700"
-                    >
-                      Checkout
-                    </a>
-                  </div>
-                  <div className="mt-6 flex justify-center text-center text-sm text-gray-500">
-                    <p>
-                      or{' '}
-                      <button
-                        type="button"
-                        onClick={() => setOpen(false)}
-                        className="font-medium text-indigo-600 hover:text-indigo-500"
-                      >
-                        Continue Shopping
-                        <span aria-hidden="true"> &rarr;</span>
-                      </button>
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </DialogPanel>
-          </div>
+    <div className="container mx-auto px-4 py-8 max-w-7xl">
+      <h1 className="text-3xl font-bold mb-6 text-gray-800">Giỏ hàng của bạn</h1>
+      
+      {/* Cart Items */}
+      <div className="bg-white shadow-lg rounded-lg overflow-hidden">
+        <div className="p-4 border-b">
+          <label className="flex items-center gap-2">
+            <input
+              type="checkbox"
+              checked={selectAll}
+              onChange={handleSelectAll}
+              className="w-5 h-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+            />
+            <span className="text-gray-700 font-medium">Chọn tất cả</span>
+          </label>
         </div>
+
+        {cartItems.map(item => (
+          <div key={item.id} className="flex items-center p-4 border-b last:border-b-0 hover:bg-gray-50">
+            <input
+              type="checkbox"
+              checked={item.checked}
+              onChange={() => handleItemCheck(item.id)}
+              className="w-5 h-5 mr-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+            />
+            <img src={item.image} alt={item.name} className="w-24 h-24 object-cover rounded-md mr-4" />
+            <div className="flex-1">
+              <h3 className="text-lg font-semibold text-gray-800">{item.name}</h3>
+              <p className="text-red-600 font-medium">{formatPrice(item.price)}</p>
+              <div className="flex items-center gap-2 mt-2">
+                <button
+                  onClick={() => handleQuantityChange(item.id, -1)}
+                  className="w-8 h-8 flex items-center justify-center bg-gray-200 rounded-full hover:bg-gray-300"
+                >
+                  -
+                </button>
+                <span className="w-12 text-center">{item.quantity}</span>
+                <button
+                  onClick={() => handleQuantityChange(item.id, 1)}
+                  className="w-8 h-8 flex items-center justify-center bg-gray-200 rounded-full hover:bg-gray-300"
+                >
+                  +
+                </button>
+              </div>
+            </div>
+            <p className="text-lg font-semibold text-gray-800">
+              {formatPrice(item.price * item.quantity)}
+            </p>
+          </div>
+        ))}
       </div>
-    </Dialog>
-  )
-}
+
+      {/* Total Section */}
+      <div className="bg-white shadow-lg rounded-lg p-6 mt-6">
+        <div className="flex justify-between items-center mb-4">
+          <span className="text-gray-700">Tổng số lượng:</span>
+          <span className="font-semibold">{totalQuantity()} sản phẩm</span>
+        </div>
+        <div className="flex justify-between items-center mb-6">
+          <span className="text-gray-700 text-lg">Tổng tiền:</span>
+          <span className="text-2xl font-bold text-red-600">{formatPrice(calculateTotal())}</span>
+        </div>
+        <button 
+          className="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition-colors disabled:bg-gray-400"
+          disabled={totalQuantity() === 0}
+        >
+          Thanh toán
+        </button>
+      </div>
+    </div>
+  );
+};
+
+export default ProductCart;

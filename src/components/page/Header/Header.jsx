@@ -1,49 +1,34 @@
+import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
+import { ShoppingBagIcon } from "@heroicons/react/24/outline";
 import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
 import DensityMediumRoundedIcon from "@mui/icons-material/DensityMediumRounded";
-import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
-import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
-import LogoutIcon from "@mui/icons-material/Logout";
-import Avatar from "@mui/material/Avatar";
-import { useRef, useState, useEffect } from "react";
+import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import logo from "../../../assets/logo.png";
-import SettingsIcon from "@mui/icons-material/Settings";
-import HowToRegIcon from "@mui/icons-material/HowToReg";
-import { logOut } from "../../../redux/apiRequest";
+import { logOut } from "../../../redux/api/authApiRequest";
+// import ProductCart from "../../ProductCart";
 
 const Header = () => {
   const [isOpenMenu, setIsOpenMenu] = useState(false);
-  const menuRef = useRef(null);
+  // const [isOpenCart, setIsOpenCart] = useState(false);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const user = useSelector((state) => state.auth.login.currentUser);
   const accessToken = useSelector(
     (state) => state.auth.login.currentUser?.accessToken
   );
-  console.log(accessToken);
+  // const totalQuantity = useSelector((state) => state.cart.totalQuantity);
+  const cartItems = useSelector((state) => state.cart?.items);
 
   const handleClickOpenMenu = () => {
     setIsOpenMenu((prev) => !prev);
   };
 
-  useEffect(() => {
-    const handleclickCloseMenu = (e) => {
-      if (menuRef.current && !menuRef.current.contains(e.target)) {
-        setIsOpenMenu(false);
-      }
-    };
-    if (isOpenMenu) {
-      document.addEventListener("mousedown", handleclickCloseMenu);
-    }
-    return () => {
-      document.removeEventListener("mousedown", handleclickCloseMenu);
-    };
-  }, [isOpenMenu]);
   const handleLogOut = () => {
     logOut(dispatch, navigate, accessToken);
-    setIsOpenMenu(false);
   };
+
   return (
     <div className=" flex justify-between items-center px-6 py-4 sm:py-1 text-[#8B8E99] lg:px-40 bg-black  ">
       <Link to="/" className="flex items-center font-bold cursor-pointer ">
@@ -52,47 +37,70 @@ const Header = () => {
       </Link>
       <div className="hidden sm:flex">
         <ul className="flex font-bold items-center space-x-6 ">
-         
           <li>Contact</li>
           <li>About</li>
           <li>Service </li>
         </ul>
       </div>
-      <div className="sm:flex space-x-4 hidden font-bold text-white ">
+      <div className="flex space-x-4  font-bold text-white ">
         {user ? (
           <>
             <div className=" cursor-pointer mr-10  ">
-              <Link to="/cart"><ShoppingCartIcon></ShoppingCartIcon></Link>
+              <Link to="/cart">
+              <button
+                className="flex justify-center items-center"
+                // onClick={() => setIsOpenCart(true)}
+              >
+                <ShoppingBagIcon
+                  aria-hidden="true"
+                  className="size-6 shrink-0 text-gray-400 group-hover:text-gray-500"
+                />
+                <span className="ml-2 text-sm font-medium text-gray-300  group-hover:text-gray-800">
+                  {cartItems.length}
+                </span>
+              </button></Link>
             </div>
             <div
-              className="flex relative items-center justify-around cursor-pointer space-x-1 "
+              className="sm:flex hidden  relative items-center justify-around cursor-pointer space-x-1 "
               onClick={handleClickOpenMenu}
-            >
-              <Avatar sx={{ width: 30, height: 30 }}></Avatar>{" "}
-              <ArrowDropDownIcon></ArrowDropDownIcon>
-            </div>
-            {isOpenMenu && (
-              <ul
-                ref={menuRef}
-                className={`absolute top-14 border rounded-sm p-3 right-36 space-y-3 shadow-lg  z-10 bg-white text-black ${
-                  isOpenMenu ? "block" : "hidden"
-                }`}
+            ></div>
+
+            <Menu as="div" className="relative ml-3 hidden sm:flex">
+              <div>
+                <MenuButton className="relative flex rounded-full bg-gray-800 text-sm focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800 focus:outline-hidden">
+                  <span className="absolute -inset-1.5" />
+                  <span className="sr-only">Open user menu</span>
+                  <img
+                    alt=""
+                    src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
+                    className="size-8 rounded-full"
+                  />
+                </MenuButton>
+              </div>
+              <MenuItems
+                transition
+                className="absolute right-0 z-10 mt-10 w-48 origin-top-right rounded-md bg-white py-1 ring-1 shadow-lg ring-black/5 transition focus:outline-hidden data-closed:scale-95 data-closed:transform data-closed:opacity-0 data-enter:duration-100 data-enter:ease-out data-leave:duration-75 data-leave:ease-in"
               >
-                <li>
-                  <HowToRegIcon></HowToRegIcon>Profile
-                </li>
-                <li>
-                  <SettingsIcon></SettingsIcon> Setting
-                </li>
-                <li>
-                  <div>
-                    <p onClick={handleLogOut}>
-                      <LogoutIcon></LogoutIcon>Logout
-                    </p>
-                  </div>
-                </li>
-              </ul>
-            )}
+                <MenuItem>
+                  <a className="block px-4 py-2 text-sm text-gray-700 data-focus:bg-gray-100 data-focus:outline-hidden">
+                    Your Profile
+                  </a>
+                </MenuItem>
+                <MenuItem>
+                  <a className="block px-4 py-2 text-sm text-gray-700 data-focus:bg-gray-100 data-focus:outline-hidden">
+                    Settings
+                  </a>
+                </MenuItem>
+                <MenuItem>
+                  <a
+                    onClick={handleLogOut}
+                    className="block px-4 cursor-pointer py-2 text-sm text-gray-700 data-focus:bg-gray-100 data-focus:outline-hidden"
+                  >
+                    Sign out
+                  </a>
+                </MenuItem>
+              </MenuItems>
+            </Menu>
           </>
         ) : (
           <Link to="/login" className="cursor-pointer">
@@ -100,11 +108,20 @@ const Header = () => {
           </Link>
         )}
       </div>
-      <div className="sm:hidden" onClick={handleClickOpenMenu}>
-        <DensityMediumRoundedIcon
-          fontSize="large"
-          className=" cursor-pointer"
-        ></DensityMediumRoundedIcon>
+      <div className="sm:hidden">
+        <div className="sm:hidden">
+          {user ? (
+            <DensityMediumRoundedIcon
+              fontSize="large"
+              className="cursor-pointer"
+              onClick={handleClickOpenMenu}
+            />
+          ) : (
+            <Link to="/login" className="cursor-pointer font-bold text-white">
+              Login
+            </Link>
+          )}
+        </div>
       </div>
       {isOpenMenu && (
         <div className="fixed transition-transform  ease-in-out top-0 right-0 bottom-0 w-1/2  backdrop-brightness-[0.1] text-white sm:hidden z-50 shadow-lg ">
@@ -120,7 +137,14 @@ const Header = () => {
               <li>Contact</li>
               <li>About</li>
               <li>Service</li>
-              <li className="text-red-600 cursor-pointer">Logout</li>
+              <li>
+                <div
+                  onClick={handleLogOut}
+                  className="text-red-600 cursor-pointer"
+                >
+                  <p>LogOut</p>
+                </div>
+              </li>
             </ul>
           </div>
         </div>

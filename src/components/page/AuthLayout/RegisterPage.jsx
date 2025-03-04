@@ -1,5 +1,5 @@
 import { Link, useNavigate } from "react-router-dom";
-import { registerUser } from "../../../redux/apiRequest";
+import { registerUser } from "../../../redux/api/authApiRequest";
 import { useDispatch } from "react-redux";
 import { useState } from "react";
 

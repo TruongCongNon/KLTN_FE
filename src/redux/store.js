@@ -1,15 +1,17 @@
 import { combineReducers, configureStore } from "@reduxjs/toolkit";
 import authReducer from "./slices/authSlice";
+import cartReducer from "./slices/cartSlice";
 import productReducer from "./slices/productSlice";
+
 import {
-  persistStore,
-  persistReducer,
   FLUSH,
-  REHYDRATE,
   PAUSE,
   PERSIST,
+  persistReducer,
+  persistStore,
   PURGE,
   REGISTER,
+  REHYDRATE,
 } from "redux-persist";
 import storage from "redux-persist/lib/storage";
 const persistConfig = {
@@ -21,6 +23,7 @@ const persistConfig = {
 const rootReducer = combineReducers({
   auth: authReducer,
   product: productReducer,
+  cart: cartReducer
 }); //   bỏ mấy cái reducer tại cái root này
 const persistedReducer = persistReducer(persistConfig, rootReducer);
 export const store = configureStore({

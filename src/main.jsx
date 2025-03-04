@@ -1,20 +1,20 @@
-import { createRoot } from "react-dom/client";
-import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { ThemeProvider } from "@emotion/react";
-import theme from "./configs/MUIConfig.js";
-import HomePage from "./components/page/HomePage";
-import RootLayout from "./components/page/RootLayout";
-import "./index.css";
+import { createRoot } from "react-dom/client";
+import { Provider } from "react-redux";
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import { PersistGate } from "redux-persist/integration/react";
+import CheckoutProduct from "./components/CheckoutProduct.jsx";
 import AuthLayout from "./components/page/AuthLayout/AuthLayout.jsx";
 import LoginPage from "./components/page/AuthLayout/LoginPage.jsx";
-import { Provider } from "react-redux";
-import { store, persistor } from "./redux/store.js";
-import RegisterPage from "./components/page/AuthLayout/RegisterPage.jsx";
 import OtpVerify from "./components/page/AuthLayout/OtpVerify.jsx";
-import { PersistGate } from "redux-persist/integration/react";
+import RegisterPage from "./components/page/AuthLayout/RegisterPage.jsx";
+import HomePage from "./components/page/HomePage";
 import ProductDetail from "./components/page/ProductDetail.jsx";
-import CheckoutProduct from "./components/CheckoutProduct.jsx";
+import RootLayout from "./components/page/RootLayout";
 import ProductCart from "./components/ProductCart.jsx";
+import theme from "./configs/MUIConfig.js";
+import "./index.css";
+import { persistor, store } from "./redux/store.js";
 const router = createBrowserRouter([
   {
     path: "/",
@@ -46,12 +46,12 @@ const router = createBrowserRouter([
         element: <ProductDetail />,
       },
       {
-        path: "/checkout/:id",
-        element: <CheckoutProduct />,
-      },
-      {
         path: "/cart",
         element: <ProductCart />,
+      },
+      {
+        path: "/checkout",
+        element: <CheckoutProduct />,
       },
     ],
   },

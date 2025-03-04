@@ -1,227 +1,129 @@
-import { RadioGroup } from "@headlessui/react";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
-import { getProductById } from "../../redux/apiRequest";
+import { getProductById } from "../../redux/api/productApiRequest"; // Nếu có API
+import StarRating from "../Rating/StarRating";
+import { addToCart } from "../../redux/api/cartApiRequest";
 
 const ProductDetail = () => {
-  const [selectedColor, setSelectedColor] = useState(null);
-  const [selectedSize, setSelectedSize] = useState(null);
-  const id = useParams();
+  const [countProduct, setCountProduct] = useState(1);
+  const { id } = useParams();
   const dispatch = useDispatch();
-  const products = useSelector((state) => state.product.getProductById?.data);
+  const accessToken = useSelector((state) => state.auth.login.currentUser?.accessToken);
+
+  const product = useSelector((state) => state.product.getProductById?.data);
+  console.log(id);
+console.log(product);
+console.log(accessToken);
+  // Gọi API lấy sản phẩm theo ID (nếu có)
   useEffect(() => {
-    if (!products) {
-      getProductById(dispatch, id);
-    } 
-  }, [dispatch, id, products]);
-  console.log("id => "+ {id} );
-  console.log("product => "+products);
+    if (id && accessToken) {
+      getProductById(dispatch, id,accessToken);
+    }
+  }, [dispatch, id,accessToken]);
+
+  // Hàm giảm số lượng
+  const decrease = () => {
+    setCountProduct((prev) => Math.max(prev - 1, 1));
+  };
+
+  // Hàm tăng số lượng
+  const increase = () => {
+    setCountProduct((prev) => prev + 1);
+  };
+ 
+  
+  // Xử lý thêm vào giỏ hàng
+  const handleAddToCart = () => {
+    if (!product) {
+      alert("Sản phẩm không tồn tại.");
+      return;
+    }
+
+    addToCart(product._id, {
+      productId: product._id,
+      name: product.name,
+      price: product.price,
+      quantity: countProduct,
+      image: product.image,
+    }, dispatch);
+
+    alert("Sản phẩm đã được thêm vào giỏ hàng!");
+  };
+
   return (
     <div className="bg-white">
-      <div className="pt-6">
-        {/* Image gallery */}
-        <div className=" grid grid-cols-1 mx-auto mt-6 max-w-2xl sm:px-6 lg:grid lg:max-w-7xl lg:grid-cols-2 lg:gap-x-8 lg:px-8">
-          <div className="">
+      <div className="sm:px-56 px-1">
+        <div className="grid grid-row- mx-auto mt-6 max-w-2xl sm:px-6 lg:grid lg:max-w-7xl lg:grid-cols-2 lg:gap-x-8 lg:px-8">
+          <div>
             <img
-              alt={products.image}
-              src={products.image}
-              className="hidden size-full rounded-lg object-cover lg:block"
+              alt={product?.image}
+              src={product?.image}
+              className="border w-full h-full rounded-lg object-cover lg:block"
             />
           </div>
           <div className="mt-4 lg:row-span-3 lg:mt-0">
-            <h2 className="sr-only">Product information</h2>
-            <p className="text-3xl tracking-tight text-gray-900">
-              {products.price}
-            </p>
+            <h2 className="text-[6.5vw] sm:text-[2.2vw] font-bold">
+              {product?.name}
+            </h2>
+            <div className="flex items-center space-x-4">
+              <StarRating rating={product?.rating} />
+              <div>{product?.comment ? "" : "Không có đánh giá"}</div>
+            </div>
+            <div className="flex items-center justify-between">
+              <p className="text-[5.5vw] sm:text-[2vw] text-red-500">
+                {product?.price} VNĐ
+              </p>
+              <span>
+                {product?.stock > 10
+                  ? `Còn lại: ${product?.stock}`
+                  : "Sắp hết hàng"}
+              </span>
+            </div>
 
-            {/* Reviews */}
-            {/* <div className="mt-6">
-              <h3 className="sr-only">Reviews</h3>
-              <div className="flex items-center">
-                <div className="flex items-center">
-                  {[0, 1, 2, 3, 4].map((rating) => (
-                    <StarIcon
-                      key={rating}
-                      aria-hidden="true"
-                      className={classNames(
-                        reviews.average > rating
-                          ? "text-gray-900"
-                          : "text-gray-200",
-                        "size-5 shrink-0"
-                      )}
-                    />
-                  ))}
-                </div>
-                <p className="sr-only"> out of 5 stars</p>
-                <a
-                  href=""
-                  className="ml-3 text-sm font-medium text-indigo-600 hover:text-indigo-500"
+            {/* Chọn số lượng */}
+            <div className="w-full">
+              <div className="flex items-center border border-gray-300 rounded-md lg:w-48 w-40">
+                <button
+                  onClick={decrease}
+                  className="lg:px-6 lg:py-2 px-3 py-1 border-r border-gray-300 text-gray-600 hover:bg-gray-200"
                 >
-                   reviews
-                </a>
+                  −
+                </button>
+                <input
+                  onChange={(e) => setCountProduct(parseInt(e.target.value) || 1)}
+                  value={countProduct}
+                  className="lg:px-6 lg:py-2 px-3 py-1 text-gray-700 focus:outline-none w-1/2 text-center"
+                  type="number"
+                  min="1"
+                />
+                <button
+                  onClick={increase}
+                  className="lg:px-6 lg:py-2 px-3 py-1 border-l border-gray-300 text-gray-600 hover:bg-gray-200"
+                >
+                  +
+                </button>
               </div>
-            </div> */}
+            </div>
 
-            <form className="mt-10">
-              {/* Colors */}
-              <div>
-                <h3 className="text-sm font-medium text-gray-900">Color</h3>
-
-                <fieldset aria-label="Choose a color" className="mt-4">
-                  <RadioGroup
-                    value={selectedColor}
-                    onChange={setSelectedColor}
-                    className="flex items-center gap-x-3"
-                  >
-                    {/* {product.colors.map((color) => (
-                      <Radio
-                        key={color.name}
-                        value={color}
-                        aria-label={color.name}
-                        className={classNames(
-                          color.selectedClass,
-                          "relative -m-0.5 flex cursor-pointer items-center justify-center rounded-full p-0.5 focus:outline-hidden data-checked:ring-2 data-focus:data-checked:ring-3 data-focus:data-checked:ring-offset-1"
-                        )}
-                      >
-                        <span
-                          aria-hidden="true"
-                          className={classNames(
-                            color.class,
-                            "size-8 rounded-full border border-black/10"
-                          )}
-                        />
-                      </Radio>
-                    ))} */}
-                  </RadioGroup>
-                </fieldset>
-              </div>
-
-              {/* Sizes */}
-              <div className="mt-10">
-                <div className="flex items-center justify-between">
-                  <h3 className="text-sm font-medium text-gray-900">Size</h3>
-                  <a
-                    href="#"
-                    className="text-sm font-medium text-indigo-600 hover:text-indigo-500"
-                  >
-                    Size guide
-                  </a>
-                </div>
-
-                <fieldset aria-label="Choose a size" className="mt-4">
-                  <RadioGroup
-                    value={selectedSize}
-                    onChange={setSelectedSize}
-                    className="grid grid-cols-4 gap-4 sm:grid-cols-8 lg:grid-cols-4"
-                  >
-                    {/* {product.sizes.map((size) => (
-                      <Radio
-                        key={size.name}
-                        value={size}
-                        disabled={!size.inStock}
-                        className={classNames(
-                          size.inStock
-                            ? "cursor-pointer bg-white text-gray-900 shadow-xs"
-                            : "cursor-not-allowed bg-gray-50 text-gray-200",
-                          "group relative flex items-center justify-center rounded-md border px-4 py-3 text-sm font-medium uppercase hover:bg-gray-50 focus:outline-hidden data-focus:ring-2 data-focus:ring-indigo-500 sm:flex-1 sm:py-6"
-                        )}
-                      >
-                        <span>{size.name}</span>
-                        {size.inStock ? (
-                          <span
-                            aria-hidden="true"
-                            className="pointer-events-none absolute -inset-px rounded-md border-2 border-transparent group-data-checked:border-indigo-500 group-data-focus:border"
-                          />
-                        ) : (
-                          <span
-                            aria-hidden="true"
-                            className="pointer-events-none absolute -inset-px rounded-md border-2 border-gray-200"
-                          >
-                            <svg
-                              stroke="currentColor"
-                              viewBox="0 0 100 100"
-                              preserveAspectRatio="none"
-                              className="absolute inset-0 size-full stroke-2 text-gray-200"
-                            >
-                              <line
-                                x1={0}
-                                x2={100}
-                                y1={100}
-                                y2={0}
-                                vectorEffect="non-scaling-stroke"
-                              />
-                            </svg>
-                          </span>
-                        )}
-                      </Radio>
-                    ))} */}
-                  </RadioGroup>
-                </fieldset>
-              </div>
-
+            <div className="flex items-end justify-between px-5m space-x-5 sm:space-x-0 sm:px-0">
               <button
+                onClick={handleAddToCart}
                 type="submit"
-                className="mt-10 flex w-full items-center justify-center rounded-md border border-transparent bg-indigo-600 px-8 py-3 text-base font-medium text-white hover:bg-indigo-700 focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:outline-hidden"
+                className="flex w-52 mt-5 items-center justify-center rounded-md border border-transparent bg-indigo-600 py-3 text-base font-medium text-white hover:bg-indigo-700 focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:outline-none"
               >
-                Add to bag
+                Thêm vào giỏ hàng
               </button>
-            </form>
+              <button className="flex w-40 text-indigo-600 mt-5 items-center justify-center rounded-md border border-indigo-600 py-3 text-base font-medium focus:ring-offset-2 focus:outline-none">
+                Mua ngay
+              </button>
+            </div>
           </div>
         </div>
-        {/* Product info */}
-        <div className="mx-auto max-w-2xl px-4 pt-10 pb-16 sm:px-6 lg:grid lg:max-w-7xl lg:grid-cols-3 lg:grid-rows-[auto_auto_1fr] lg:gap-x-8 lg:px-8 lg:pt-16 lg:pb-24">
-          <div className="lg:col-span-2 lg:border-r lg:border-gray-200 lg:pr-8">
-            {/* <h1 className="text-2xl font-bold tracking-tight text-gray-900 sm:text-3xl">
-              {product.name}
-            </h1> */}
-          </div>
 
-          {/* Options */}
-
-          <div className="py-10 lg:col-span-2 lg:col-start-1 lg:border-r lg:border-gray-200 lg:pt-6 lg:pr-8 lg:pb-16">
-            {/* Description and details */}
-            <div>
-              <h3 className="sr-only">Description</h3>
-
-              <div className="space-y-6">
-                <p className="text-base text-gray-900">
-                  {products.description}
-                </p>
-              </div>
-            </div>
-
-            <div className="mt-10">
-              <h3 className="text-sm font-medium text-gray-900">Highlights</h3>
-
-              <div className="mt-4">
-                <ul role="list" className="list-disc space-y-2 pl-4 text-sm">
-                  {products.highlights.map((highlight) => (
-                    <li key={highlight} className="text-gray-400">
-                      <span className="text-gray-600">{highlight}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </div>
-
-            <div className="mt-10">
-              <h2 className="text-sm font-medium text-gray-900">Details</h2>
-
-              <div className="mt-4 space-y-6">
-                <p className="text-sm text-gray-600">{products.details}</p>
-              </div>
-            </div>
-          </div>
-          <div className="">
-            <textarea
-              className="w-full h-52 resize-none border border-gray-300 rounded-lg p-2 "
-              name=""
-            ></textarea>
-            <button className="mt-10 flex w-full items-center justify-center rounded-md border border-transparent bg-indigo-600 px-8 py-3 text-base font-medium text-white hover:bg-indigo-700 focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:outline-hidden">
-              Submit
-            </button>
-          </div>
+        <div className="py-10">
+          <h3 className="text-[5vw] sm:text-[2.2vw] font-bold">Mô tả sản phẩm</h3>
+          <p className="text-base text-gray-900">{product?.description}</p>
         </div>
       </div>
     </div>
