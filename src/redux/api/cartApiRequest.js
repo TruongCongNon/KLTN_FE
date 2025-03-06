@@ -1,44 +1,43 @@
 import axios from "axios";
 import { setCart } from "../slices/cartSlice";
 
-export const getCart = async (userId, dispatch) => {
+
+export const addToCart = async (userId, product, dispatch, accessToken) => {
   try {
-    const res = await axios.get(`http://localhost:5000/v1/cart/${userId}`);
+    const res = await axios.post(
+      "http://localhost:5000/v1/cart/add",
+      { userId, product },
+      {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    console.log("Response from API:", res.data);
     dispatch(setCart(res.data));
   } catch (error) {
-    console.log(error);
+    console.error("Lỗi khi thêm vào giỏ hàng:", error.response?.data || error.message);
   }
 };
 
-export const addToCart = async (userId, product, dispatch) => {
+export const removeCart = async ( product, dispatch, accessToken) => {
   try {
-    const res = await axios.post("http://localhost:5000/v1/cart/add", {
-      userId,
-      product,
-    });
+    const res = await axios.post(
+      "http://localhost:5000/v1/cart/add",
+      {  product },
+      {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    console.log("Response from API:", res.data);
     dispatch(setCart(res.data));
   } catch (error) {
-    console.log(error);
+    console.error("Lỗi khi xóa sp giỏ hàng:", error.response?.data || error.message);
   }
 };
 
-export const removeFromCart = async (userId, productId, dispatch) => {
-  try {
-    const res = await axios.post("http://localhost:5000/v1/cart/remove", {
-      userId,
-      productId,
-    });
-    dispatch(setCart(res.data));
-  } catch (error) {
-    console.error("Lỗi khi xóa sản phẩm khỏi giỏ hàng:", error);
-  }
-};
 
-export const clearCart = async (userId, dispatch) => {
-  try {
-    await axios.post("http://localhost:5000/v1/cart/clear", { userId });
-    dispatch(setCart({ userId, items: [], totalQuantity: 0, totalPrice: 0 }));
-  } catch (error) {
-    console.log(error);
-  }
-};

@@ -4,25 +4,29 @@ import { useParams } from "react-router-dom";
 import { getProductById } from "../../redux/api/productApiRequest"; // Nếu có API
 import StarRating from "../Rating/StarRating";
 import { addToCart } from "../../redux/api/cartApiRequest";
+// import { addToCart } from "../../redux/api/cartApiRequest";
 
 const ProductDetail = () => {
   const [countProduct, setCountProduct] = useState(1);
   const { id } = useParams();
   const dispatch = useDispatch();
-  const accessToken = useSelector((state) => state.auth.login.currentUser?.accessToken);
-
+  const accessToken = useSelector(
+    (state) => state.auth.login.currentUser?.accessToken
+  );
   const product = useSelector((state) => state.product.getProductById?.data);
-  console.log(id);
-console.log(product);
-console.log(accessToken);
+  const userId = useSelector((state) => state.auth.login.currentUser?._id);
+  // console.log("id=>"+userId);
+  // console.log(id);
+  // console.log(product);
+  // console.log(accessToken);
   // Gọi API lấy sản phẩm theo ID (nếu có)
   useEffect(() => {
     if (id && accessToken) {
-      getProductById(dispatch, id,accessToken);
+      getProductById(dispatch, id, accessToken);
     }
-  }, [dispatch, id,accessToken]);
+  }, [dispatch, id, accessToken]);
 
-  // Hàm giảm số lượng
+  // Hàm giảm số lượng 
   const decrease = () => {
     setCountProduct((prev) => Math.max(prev - 1, 1));
   };
@@ -31,25 +35,39 @@ console.log(accessToken);
   const increase = () => {
     setCountProduct((prev) => prev + 1);
   };
- 
-  
-  // Xử lý thêm vào giỏ hàng
-  const handleAddToCart = () => {
+  const handleAddToCart =  () => {
     if (!product) {
       alert("Sản phẩm không tồn tại.");
       return;
     }
-
-    addToCart(product._id, {
-      productId: product._id,
-      name: product.name,
-      price: product.price,
-      quantity: countProduct,
-      image: product.image,
-    }, dispatch);
-
-    alert("Sản phẩm đã được thêm vào giỏ hàng!");
+  
+    if (!userId) {
+      alert("Bạn cần đăng nhập để thêm sản phẩm vào giỏ hàng.");
+      return;
+    }
+  
+    try {
+       addToCart(
+        userId, 
+        {
+          productId: product._id,
+          name: product.name,
+          price: product.price,
+          quantity: countProduct,
+          image: product.image,
+          stock:product.stock
+        },
+        dispatch,
+        accessToken 
+      );
+  
+      alert("Sản phẩm đã được thêm vào giỏ hàng!");
+    } catch (error) {
+      console.error("Lỗi khi thêm vào giỏ hàng:", error);
+      alert("Thêm sản phẩm vào giỏ hàng thất bại!");
+    }
   };
+  
 
   return (
     <div className="bg-white">
@@ -91,10 +109,12 @@ console.log(accessToken);
                   −
                 </button>
                 <input
-                  onChange={(e) => setCountProduct(parseInt(e.target.value) || 1)}
+                  onChange={(e) =>
+                    setCountProduct(parseInt(e.target.value) || 1)
+                  }
                   value={countProduct}
                   className="lg:px-6 lg:py-2 px-3 py-1 text-gray-700 focus:outline-none w-1/2 text-center"
-                  type="number"
+                  type="text"
                   min="1"
                 />
                 <button
@@ -122,7 +142,9 @@ console.log(accessToken);
         </div>
 
         <div className="py-10">
-          <h3 className="text-[5vw] sm:text-[2.2vw] font-bold">Mô tả sản phẩm</h3>
+          <h3 className="text-[5vw] sm:text-[2.2vw] font-bold">
+            Mô tả sản phẩm
+          </h3>
           <p className="text-base text-gray-900">{product?.description}</p>
         </div>
       </div>

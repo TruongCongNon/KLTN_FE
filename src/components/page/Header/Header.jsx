@@ -7,20 +7,20 @@ import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import logo from "../../../assets/logo.png";
 import { logOut } from "../../../redux/api/authApiRequest";
-// import ProductCart from "../../ProductCart";
+
 
 const Header = () => {
   const [isOpenMenu, setIsOpenMenu] = useState(false);
-  // const [isOpenCart, setIsOpenCart] = useState(false);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const user = useSelector((state) => state.auth.login.currentUser);
   const accessToken = useSelector(
     (state) => state.auth.login.currentUser?.accessToken
   );
-  // const totalQuantity = useSelector((state) => state.cart.totalQuantity);
-  const cartItems = useSelector((state) => state.cart?.items);
+  const cartItems=  useSelector((state) => state.cart?.items.length);
 
+
+  // console.log("SL=> " +JSON.stringify(cartItems) );
   const handleClickOpenMenu = () => {
     setIsOpenMenu((prev) => !prev);
   };
@@ -47,18 +47,19 @@ const Header = () => {
           <>
             <div className=" cursor-pointer mr-10  ">
               <Link to="/cart">
-              <button
-                className="flex justify-center items-center"
-                // onClick={() => setIsOpenCart(true)}
-              >
-                <ShoppingBagIcon
-                  aria-hidden="true"
-                  className="size-6 shrink-0 text-gray-400 group-hover:text-gray-500"
-                />
-                <span className="ml-2 text-sm font-medium text-gray-300  group-hover:text-gray-800">
-                  {cartItems.length}
-                </span>
-              </button></Link>
+                <button
+                  className="flex justify-center items-center"
+                  // onClick={() => setIsOpenCart(true)}
+                >
+                  <ShoppingBagIcon
+                    aria-hidden="true"
+                    className="size-6 shrink-0 text-gray-400 group-hover:text-gray-500"
+                  />
+                  <span className="ml-2 text-sm font-medium text-gray-300  group-hover:text-gray-800">
+                    {cartItems?cartItems:0}
+                  </span>
+                </button>
+              </Link>
             </div>
             <div
               className="sm:flex hidden  relative items-center justify-around cursor-pointer space-x-1 "
