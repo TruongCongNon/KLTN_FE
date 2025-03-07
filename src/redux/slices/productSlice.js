@@ -14,6 +14,11 @@ const productSlice = createSlice({
       error: false,
       success: false,
     },
+    getProductRelated: {
+      productByTag:[],
+      isFetching: false,
+      error:false
+    },
   },
   reducers: {
     getAllProductStart: (state) => {
@@ -47,6 +52,22 @@ const productSlice = createSlice({
       state.getProductById.isFetching = false;
       state.getProductById.error = true;
     },
+    getProductRelatedStart: (state) => {
+      if (!state.getProductRelated) {
+        state.getProductRelated = { productByTag: [], isFetching: false, error: false };
+      }
+      state.getProductRelated.isFetching = true;
+      state.getProductRelated.error = false;
+    },
+    getProductRelatedSuccess: (state, action) => {
+      state.getProductRelated.isFetching = false;
+      state.getProductRelated.error = false;
+      state.getProductRelated.productByTag = action.payload || [];
+    },
+    getProductRelatedFailed: (state) => {
+      state.getProductRelated.isFetching = false;
+      state.getProductRelated.error = true +"Lỗi khi tải sản phẩm liên quan";
+    },
   },
 });
 
@@ -57,5 +78,8 @@ export const {
   getProductByIdStart,
   getProductByIdSuccess,
   getProductByIdFailed,
+  getProductRelatedStart,
+  getProductRelatedSuccess,
+  getProductRelatedFailed,
 } = productSlice.actions;
 export default productSlice.reducer;

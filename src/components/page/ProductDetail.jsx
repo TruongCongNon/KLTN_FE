@@ -4,6 +4,7 @@ import { useParams } from "react-router-dom";
 import { getProductById } from "../../redux/api/productApiRequest"; // Nếu có API
 import StarRating from "../Rating/StarRating";
 import { addToCart } from "../../redux/api/cartApiRequest";
+import ProductRelated from "../ProductRelated/ProductRelated";
 // import { addToCart } from "../../redux/api/cartApiRequest";
 
 const ProductDetail = () => {
@@ -71,7 +72,7 @@ const ProductDetail = () => {
 
   return (
     <div className="bg-white">
-      <div className="sm:px-56 px-1">
+      <div className="sm:px-56 px-1 ">
         <div className="grid grid-row- mx-auto mt-6 max-w-2xl sm:px-6 lg:grid lg:max-w-7xl lg:grid-cols-2 lg:gap-x-8 lg:px-8">
           <div>
             <img
@@ -148,6 +149,8 @@ const ProductDetail = () => {
           <p className="text-base text-gray-900">{product?.description}</p>
         </div>
       </div>
+      <ProductRelated id ={id}
+      accessToken={accessToken}/>
     </div>
   );
 };
