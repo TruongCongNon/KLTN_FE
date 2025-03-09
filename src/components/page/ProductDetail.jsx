@@ -72,7 +72,7 @@ const ProductDetail = () => {
 
   return (
     <div className="bg-white">
-      <div className="sm:px-56 px-1 ">
+      <div className="sm:px-56 px-1 lg:max-w-7x ">
         <div className="grid grid-row- mx-auto mt-6 max-w-2xl sm:px-6 lg:grid lg:max-w-7xl lg:grid-cols-2 lg:gap-x-8 lg:px-8">
           <div>
             <img
@@ -142,15 +142,16 @@ const ProductDetail = () => {
           </div>
         </div>
 
-        <div className="py-10">
-          <h3 className="text-[5vw] sm:text-[2.2vw] font-bold">
+        <div className=" mx-auto max-w-2xl px-4 py-16 sm:px-6 sm:py-24 lg:max-w-7xl lg:px-8">
+          <h3 className="text-[5vw] sm:text-[1vw] font-bold">
             Mô tả sản phẩm
           </h3>
           <p className="text-base text-gray-900">{product?.description}</p>
         </div>
       </div>
       <ProductRelated id ={id}
-      accessToken={accessToken}/>
+      accessToken={accessToken}
+      product= {product}/>
     </div>
   );
 };

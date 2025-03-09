@@ -1,24 +1,41 @@
 // Cart.js
 
 import { TrashIcon } from "@heroicons/react/24/outline";
-import { useEffect, useMemo, useState } from "react";
-import { useSelector } from "react-redux";
+import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { Link } from "react-router-dom";
+import { removeCart } from "../redux/api/cartApiRequest";
+
 
 const ProductCart = () => {
-  // const dispatch = useDispatch();
-  const cartShoppingItems = useSelector((state) => state.cart?.items);
-  const cartShoppingItemsId = useMemo(
-    () => cartShoppingItems?.map((item) => item.productId) || [],
-    [cartShoppingItems]
-  );
-  console.log("ID của sp trong giỏ hàng=> " + cartShoppingItemsId);
   const [cartItems, setCartItems] = useState([]);
-  // State for select all checkbox
   const [selectAll, setSelectAll] = useState(false);
+  const cartShoppingItems = useSelector((state) => state.cart?.items);
+  const dispatch = useDispatch();
+  const accessToken = useSelector(
+    (state) => state.auth.login.currentUser?.accessToken
+  );
+  const userId = useSelector((state) => state.auth.login.currentUser?._id);
+  // const cartShoppingItemsId = useMemo(
+  //   () => cartShoppingItems?.map((item) => item.productId) || [],
+  //   [cartShoppingItems]
+  // );
+
+  // console.log("ID của sp trong giỏ hàng=> " + cartShoppingItemsId);
+const handleRemoveItemFromCart = (productId) => {
+  // console.log("id tỏng handle" + productId);
+  // console.log("id tỏng handle acc" + accessToken);
+
+  // console.log("id tỏng handle user" + userId);
+
+   removeCart(userId,productId, dispatch, accessToken);
+  };
+  // State for select all checkbox
   useEffect(() => {
     if (cartShoppingItems) return setCartItems(cartShoppingItems);
   }, [cartShoppingItems]);
   // Calculate totals
+
   const calculateTotal = () => {
     return cartItems.reduce((total, item) => {
       return item.checked ? total + item.price * item.quantity : total;
@@ -148,7 +165,7 @@ const ProductCart = () => {
             </p>
             <TrashIcon
                 className="h-6 w-6 cursor-pointer hover:text-red-600"
-                // onClick={handleremoveCartItems(item.)}
+                onClick={()=>handleRemoveItemFromCart(item.productId)}
               ></TrashIcon>
             </div>
            
@@ -168,15 +185,15 @@ const ProductCart = () => {
             {formatPrice(calculateTotal())}
           </span>
         </div>
-        <button
+        <Link to="/checkout"><button
           className="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition-colors disabled:bg-gray-400"
           disabled={totalQuantity() === 0}
         >
           Thanh toán
-        </button>
+        </button></Link>
       </div>
     </div>
   );
 };
 
-export default ProductCart;
+export default ProductCart; 

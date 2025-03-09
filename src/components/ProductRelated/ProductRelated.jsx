@@ -1,8 +1,10 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { getProductRelated } from "../../redux/api/productApiRequest";
+import { useNavigate } from "react-router-dom";
 
 const ProductRelated = ({ id }) => {
+  const navigate = useNavigate();
   const [isShowMoreProductRelated, setIsShowMoreProductRelated] =
     useState(false);
   const accessToken = useSelector(
@@ -25,14 +27,22 @@ const ProductRelated = ({ id }) => {
     ? productRelated
     : productRelated.slice(0, 4);
   console.log("productrelated=> " + productRelated);
+  const handleLCickProudctDetail = (productId) => {
+    console.log("id trong handle" + productId);
+    navigate(`/product/${productId}`);
+  };
   return (
     <div className="mx-auto max-w-2xl px-4 py-16 sm:px-6 sm:py-24 lg:max-w-7xl lg:px-8">
       <h2 className="text-2xl font-bold tracking-tight text-gray-900">
         Product Related
       </h2>
-      <div className="mt-6 grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-4 xl:gap-x-8">
+      <div className="mt-6 grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-4 xl:gap-x-8 cursor-pointer">
         {productRelatedSlice.map((product) => (
-          <div key={product.id} className="group relative">
+          <div
+            onClick={() => handleLCickProudctDetail(product._id)}
+            key={product._id}
+            className="group relative"
+          >
             <img
               alt={product.imageAlt}
               src={product.imageSrc}
@@ -55,11 +65,13 @@ const ProductRelated = ({ id }) => {
           </div>
         ))}
       </div>
-      <div
-        onClick={()=>setIsShowMoreProductRelated(!isShowMoreProductRelated)}
-        className="flex items-center justify-center mt-10 border rounded-lg py-3 cursor-pointer bg-indigo-600 hover:bg-indigo-400 text-white font-medium text-[4vw] "
-      >
-        {isShowMoreProductRelated ? "Show less " : "Show more"}
+      <div className="flex items-center justify-center mt-10     ">
+        <p
+          onClick={() => setIsShowMoreProductRelated(!isShowMoreProductRelated)}
+          className="flex rounded-lg border items-center justify-center py-3 text-white font-medium text-[4vw] lg:text-lg bg-indigo-600 cursor-pointer w-32 "
+        >
+          {isShowMoreProductRelated ? "Show less " : "Show more"}
+        </p>
       </div>
     </div>
   );

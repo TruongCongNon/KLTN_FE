@@ -6,6 +6,7 @@ export default function CheckoutPage() {
   const cartItems = useSelector((state) => state.cart?.items || []);
   const totalPrice = useSelector((state) => state.cart?.totalPrice || 0);
 
+
   // State cho thông tin khách hàng
   const [formData, setFormData] = useState({
     fullName: "",
@@ -47,7 +48,7 @@ export default function CheckoutPage() {
               {cartItems.length > 0 ? (
                 cartItems.map((item) => (
                   <div
-                    key={item.id}
+                    key={item._id}
                     className="flex items-center gap-4 border-b pb-4"
                   >
                     <img

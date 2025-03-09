@@ -1,34 +1,36 @@
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import { getAllProduct } from "../../../redux/api/productApiRequest";
+import Loading from "../../Loading/Loading";
 
 const ProductList = ({ title, category }) => {
   const dispatch = useDispatch();
   const { productsByCategory } = useSelector((state) => state.product);
-  
-  const products = useMemo(
-    () => {
-      if (!productsByCategory || typeof productsByCategory !== "object") {
-        return []; // Nếu productsByCategory là null hoặc undefined thì trả về mảng rỗng
-      }
-      if (category === "") {
-        return Object.values(productsByCategory).flat();
-      }
- 
-      return Array.isArray(productsByCategory?.[category])
-        ? productsByCategory[category]
-        : [];
-    },
-    [productsByCategory, category]
-  );
+  const [isShowMore, setIsShowMore] = useState(false);
 
+  const products = useMemo(() => {
+    if (!productsByCategory || typeof productsByCategory !== "object") {
+      return []; // Nếu productsByCategory là null hoặc undefined thì trả về mảng rỗng
+    }
+    if (category === "") {
+      return Object.values(productsByCategory).flat();
+    }
+
+    return Array.isArray(productsByCategory?.[category])
+      ? productsByCategory[category]
+      : [];
+  }, [productsByCategory, category]);
+  const productsByCategorySlice = isShowMore ? products : products.slice(0, 4);
   useEffect(() => {
     if (category && !productsByCategory?.[category]) {
       getAllProduct(dispatch, category);
     }
 
-    if (category === "Trending" && Object.keys(productsByCategory).length === 0) {
+    if (
+      category === "Trending" &&
+      Object.keys(productsByCategory).length === 0
+    ) {
       getAllProduct(dispatch, "Trending");
     }
   }, [dispatch, category, productsByCategory]);
@@ -42,9 +44,9 @@ const ProductList = ({ title, category }) => {
           </p>
           <div className="grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 xl:gap-x-8 mt-3">
             {products.length === 0 ? (
-              <p>No products found for this category.</p>
+              <Loading />
             ) : (
-              products.map((product) => (
+              productsByCategorySlice.map((product) => (
                 <Link
                   to={`/product/${product._id}`}
                   key={product._id}
@@ -70,6 +72,14 @@ const ProductList = ({ title, category }) => {
               ))
             )}
           </div>
+        </div>
+        <div className="flex items-center justify-center ">
+          <p
+            onClick={() => setIsShowMore(!isShowMore)}
+            className="flex rounded-lg border items-center justify-center py-3 text-white font-medium text-[4vw] lg:text-lg bg-indigo-600 cursor-pointer w-32 "
+          >
+            {isShowMore ? "Show less" : "Show more"}
+          </p>
         </div>
       </div>
     </div>

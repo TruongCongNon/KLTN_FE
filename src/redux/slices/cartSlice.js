@@ -39,7 +39,7 @@ export const cartSlice = createSlice({
     removeCart: (state, action) => {
       const productId = action.payload;
       const existingItem = state.items.find(
-        (item) => item.productId === productId
+        (item) =>String( item.productId) === String(productId)
       );
 
       if (existingItem) {
