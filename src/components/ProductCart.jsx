@@ -4,8 +4,7 @@ import { TrashIcon } from "@heroicons/react/24/outline";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
-import { removeCart } from "../redux/api/cartApiRequest";
-
+import { clearCart, removeCart } from "../redux/api/cartApiRequest";
 
 const ProductCart = () => {
   const [cartItems, setCartItems] = useState([]);
@@ -16,19 +15,15 @@ const ProductCart = () => {
     (state) => state.auth.login.currentUser?.accessToken
   );
   const userId = useSelector((state) => state.auth.login.currentUser?._id);
-  // const cartShoppingItemsId = useMemo(
-  //   () => cartShoppingItems?.map((item) => item.productId) || [],
-  //   [cartShoppingItems]
-  // );
-
-  // console.log("ID của sp trong giỏ hàng=> " + cartShoppingItemsId);
-const handleRemoveItemFromCart = (productId) => {
-  // console.log("id tỏng handle" + productId);
-  // console.log("id tỏng handle acc" + accessToken);
-
-  // console.log("id tỏng handle user" + userId);
-
-   removeCart(userId,productId, dispatch, accessToken);
+  console.log("userId" + userId);
+  const handleRemoveItemFromCart = (productId) => {
+    removeCart(userId, productId, dispatch, accessToken);
+  };
+  const handleClearCart = () => {
+    console.log("userid" + userId);
+    alert("Xóa tất cả sản phẩm thành công");
+    clearCart(userId, dispatch, accessToken);
+    // alert("Xóa tất cả sản phẩm thành công");
   };
   // State for select all checkbox
   useEffect(() => {
@@ -97,6 +92,7 @@ const handleRemoveItemFromCart = (productId) => {
   // const handleremoveCartItems = (productId) => {
   //   dispatch(removeCart(productId));
   // };
+
   return (
     <div className="container mx-auto px-4 py-8 max-w-7xl">
       <h1 className="text-3xl font-bold mb-6 text-gray-800">
@@ -113,9 +109,14 @@ const handleRemoveItemFromCart = (productId) => {
               onChange={handleSelectAll}
               className="w-5 h-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
             />
-            <span className="text-gray-700 font-medium">Chọn tất cả</span>
+            <p className="text-gray-700 font-medium">Chọn tất cả</p>
           </label>
-          <p className="text-red-600 cursor-pointer hover:text-red-700">Xóa tất cả </p>
+          <p
+            onClick={handleClearCart}
+            className="text-red-600 cursor-pointer hover:text-red-700"
+          >
+            Xóa tất cả{" "}
+          </p>
         </div>
 
         {cartItems.map((item) => (
@@ -159,16 +160,14 @@ const handleRemoveItemFromCart = (productId) => {
               </div>
             </div>
             <div className="flex space-x-3 ">
-              
-               <p className="text-lg font-semibold text-gray-800">
-              {formatPrice(item.price * item.quantity)}
-            </p>
-            <TrashIcon
+              <p className="text-lg font-semibold text-gray-800">
+                {formatPrice(item.price * item.quantity)}
+              </p>
+              <TrashIcon
                 className="h-6 w-6 cursor-pointer hover:text-red-600"
-                onClick={()=>handleRemoveItemFromCart(item.productId)}
+                onClick={() => handleRemoveItemFromCart(item.productId)}
               ></TrashIcon>
             </div>
-           
           </div>
         ))}
       </div>
@@ -185,15 +184,17 @@ const handleRemoveItemFromCart = (productId) => {
             {formatPrice(calculateTotal())}
           </span>
         </div>
-        <Link to="/checkout"><button
-          className="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition-colors disabled:bg-gray-400"
-          disabled={totalQuantity() === 0}
-        >
-          Thanh toán
-        </button></Link>
+        <Link to="/checkout">
+          <button
+            className="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition-colors disabled:bg-gray-400"
+            disabled={totalQuantity() === 0}
+          >
+            Thanh toán
+          </button>
+        </Link>
       </div>
     </div>
   );
 };
 
-export default ProductCart; 
+export default ProductCart;

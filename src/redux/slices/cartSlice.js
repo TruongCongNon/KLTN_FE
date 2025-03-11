@@ -10,10 +10,10 @@ export const cartSlice = createSlice({
   },
   reducers: {
     setCart: (state, action) => {
-      state.userId = action.payload.cart.userId || null;
-      state.items = action.payload.cart.items || [];
-      state.totalPrice = action.payload.cart.totalPrice || 0;
-      state.totalQuantity = action.payload.cart.totalQuantity || 0;
+      state.userId = action.payload.cart?.userId || null;
+      state.items = action.payload.cart?.items || [];
+      state.totalPrice = action.payload.cart?.totalPrice || 0;
+      state.totalQuantity = action.payload.cart?.totalQuantity || 0;
     },
 
     addItem: (state, action) => {
@@ -50,8 +50,9 @@ export const cartSlice = createSlice({
         );
       }
     },
-    clearCart: (state) => {
+    clearCart: (state,action) => {
       state.items = [];
+      state.userId = action.payload?.userId || state.userId;
       state.totalPrice = 0;
       state.totalQuantity = 0;
     },

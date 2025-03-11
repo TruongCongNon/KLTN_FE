@@ -8,7 +8,6 @@ import { Link, useNavigate } from "react-router-dom";
 import logo from "../../../assets/logo.png";
 import { logOut } from "../../../redux/api/authApiRequest";
 
-
 const Header = () => {
   const [isOpenMenu, setIsOpenMenu] = useState(false);
   const dispatch = useDispatch();
@@ -17,8 +16,7 @@ const Header = () => {
   const accessToken = useSelector(
     (state) => state.auth.login.currentUser?.accessToken
   );
-  const cartItems=  useSelector((state) => state.cart?.items.length);
-
+  const cartItems = useSelector((state) => state.cart?.items.length);
 
   // console.log("SL=> " +JSON.stringify(cartItems) );
   const handleClickOpenMenu = () => {
@@ -56,7 +54,7 @@ const Header = () => {
                     className="size-6 shrink-0 text-gray-400 group-hover:text-gray-500"
                   />
                   <span className="ml-2 text-sm font-medium text-gray-300  group-hover:text-gray-800">
-                    {cartItems?cartItems:0}
+                    {cartItems ? cartItems : 0}
                   </span>
                 </button>
               </Link>
@@ -104,7 +102,7 @@ const Header = () => {
             </Menu>
           </>
         ) : (
-          <Link to="/login" className="cursor-pointer">
+          <Link to="/login" className="cursor-pointer hidden sm:block">
             Login
           </Link>
         )}
@@ -118,7 +116,10 @@ const Header = () => {
               onClick={handleClickOpenMenu}
             />
           ) : (
-            <Link to="/login" className="cursor-pointer font-bold text-white">
+            <Link
+              to="/login"
+              className="sm:hidden cursor-pointer font-bold text-white"
+            >
               Login
             </Link>
           )}

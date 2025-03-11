@@ -23,15 +23,11 @@ export const addToCart = async (userId, product, dispatch, accessToken) => {
   }
 };
 
-export const removeCart = async (userId, productId,  dispatch, accessToken) => {
-  console.log("id tỏng api"+productId);
-  console.log("id user tỏng api"+userId);
-  console.log("access tỏng api"+accessToken);
+export const removeCart = async (userId, productId, dispatch, accessToken) => {
   try {
-    
     const res = await axios.post(
       "http://localhost:5000/v1/cart/remove",
-      {  userId, productId}, //  Đảm bảo gửi đúng dữ liệu
+      { userId, productId },
       {
         headers: {
           Authorization: `Bearer ${accessToken}`,
@@ -46,5 +42,31 @@ export const removeCart = async (userId, productId,  dispatch, accessToken) => {
       "Lỗi khi xóa sp giỏ hàng:",
       error.response?.data || error.message
     );
+  }
+};
+export const clearCart = async (userId, dispatch, accessToken) => {
+  if (!userId) {
+      console.error("Lỗi: userId bị null hoặc undefined");
+      return;
+  }
+
+  try {
+      console.log("Gửi request xóa giỏ hàng với userId:", userId);
+      const res = await axios.post(
+          "http://localhost:5000/v1/cart/clear",
+          { userId },
+          {
+              headers: {
+                  Authorization: `Bearer ${accessToken}`,
+                  "Content-Type": "application/json",
+              },
+          }
+      );
+
+      console.log("Giỏ hàng đã được xóa:", res.data);
+      dispatch(setCart(res.data));
+
+  } catch (error) {
+      console.error("Lỗi khi xóa giỏ hàng:", error.response?.data || error.message);
   }
 };
