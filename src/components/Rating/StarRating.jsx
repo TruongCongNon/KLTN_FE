@@ -11,7 +11,7 @@ const StarRating = ({ rating, maxStars = 5 }) => {
         const isHalfStar = index + 0.5 === roundedRating; // Sao nửa
 
         return (
-          <div key={index} className="relative w-6 h-6">
+          <div key={index} className="relative w-6 h-6 cursor-pointer">
             {/* Sao rỗng */}
             <StarOutline className="absolute text-gray-300 w-6 h-6" />
             

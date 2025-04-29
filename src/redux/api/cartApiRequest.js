@@ -1,72 +1,74 @@
-import axios from "axios";
-import { setCart } from "../slices/cartSlice";
-
-export const addToCart = async (userId, product, dispatch, accessToken) => {
+import API from "../../core/axiosInterceptor";
+import {
+  addCartFailed,
+  addCartStart,
+  addCartSuccess,
+  clearCartFailed,
+  clearCartStart,
+  clearCartSuccess,
+  getCartFailed,
+  getCartStart,
+  getCartSuccess,
+  removeFromCartFailed,
+  removeFromCartStart,
+  removeFromCartSuccess,
+  updateCartStart,
+  updateCartSuccess,
+} from "../slices/cartSlice";
+export const getCart = (userId) => async (dispatch) => {
+  dispatch(getCartStart());
   try {
-    const res = await axios.post(
-      "http://localhost:5000/v1/cart/add",
-      { userId, product },
-      {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-          "Content-Type": "application/json",
-        },
-      }
-    );
-    console.log("Response from API:", res.data);
-    dispatch(setCart(res.data));
+    const res = await API.get(`/cart/${userId}`, {});
+    dispatch(getCartSuccess(res.data));
+   
   } catch (error) {
-    console.error(
-      "Lỗi khi thêm vào giỏ hàng:",
-      error.response?.data || error.message
-    );
+    dispatch(getCartFailed());
   }
 };
 
-export const removeCart = async (userId, productId, dispatch, accessToken) => {
+export const addToCart = (userId, productId, quantity) => async (dispatch) => {
+  dispatch(addCartStart());
   try {
-    const res = await axios.post(
-      "http://localhost:5000/v1/cart/remove",
-      { userId, productId },
-      {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-          "Content-Type": "application/json",
-        },
-      }
-    );
-    console.log("Response from API:", res.data);
-    dispatch(setCart(res.data));
+    const res = await API.post("/cart/add", { userId, productId, quantity });
+    console.log("Response from API:", res);
+    dispatch(addCartSuccess(res?.data));
   } catch (error) {
+    dispatch(addCartFailed());
+  }
+};
+
+export const removeCart = (userId, productId) => async (dispatch) => {
+  dispatch(removeFromCartStart());
+  try {
+    const res = await API.post("/cart/remove", { userId, productId });
+    console.log("Response from API:", res.data);
+    dispatch(removeFromCartSuccess(res.data));
+  } catch (error) {
+    dispatch(removeFromCartFailed());
     console.error(
       "Lỗi khi xóa sp giỏ hàng:",
       error.response?.data || error.message
     );
   }
 };
-export const clearCart = async (userId, dispatch, accessToken) => {
-  if (!userId) {
-      console.error("Lỗi: userId bị null hoặc undefined");
-      return;
-  }
-
+export const updateCart = (userId, productId, quantity) => async (dispatch) => {
+  dispatch(updateCartStart());
   try {
-      console.log("Gửi request xóa giỏ hàng với userId:", userId);
-      const res = await axios.post(
-          "http://localhost:5000/v1/cart/clear",
-          { userId },
-          {
-              headers: {
-                  Authorization: `Bearer ${accessToken}`,
-                  "Content-Type": "application/json",
-              },
-          }
-      );
-
-      console.log("Giỏ hàng đã được xóa:", res.data);
-      dispatch(setCart(res.data));
-
+    const res = await API.post("/cart/update", { userId, productId, quantity });
+    dispatch(updateCartSuccess(res.data));
+    console.log("data",res.data);
   } catch (error) {
-      console.error("Lỗi khi xóa giỏ hàng:", error.response?.data || error.message);
+    dispatch(updateCartFailed());
+    console.log(error);
+  }
+};
+export const clearCart =(userId)=> async ( dispatch) => {
+  dispatch(clearCartStart());
+  try {
+    await API.post("/cart/clear", { userId });
+    dispatch(clearCartSuccess());
+  } catch (error) {
+    dispatch(clearCartFailed());
+    console.log(error);
   }
 };

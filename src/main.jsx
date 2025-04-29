@@ -1,20 +1,32 @@
-import { ThemeProvider } from "@emotion/react";
 import { createRoot } from "react-dom/client";
 import { Provider } from "react-redux";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import { PersistGate } from "redux-persist/integration/react";
-import CheckoutProduct from "./components/CheckoutProduct.jsx";
+import "slick-carousel/slick/slick-theme.css";
+import "slick-carousel/slick/slick.css";
+import Modal from "./components/Modal/Modal.jsx";
 import AuthLayout from "./components/page/AuthLayout/AuthLayout.jsx";
+import EnterEmailPage from "./components/page/AuthLayout/EnterEmailPage.jsx";
+import ForgotPasswordPage from "./components/page/AuthLayout/ForgotPasswordPage.jsx";
 import LoginPage from "./components/page/AuthLayout/LoginPage.jsx";
-import OtpVerify from "./components/page/AuthLayout/OtpVerify.jsx";
 import RegisterPage from "./components/page/AuthLayout/RegisterPage.jsx";
+import VerifyOTP from "./components/page/AuthLayout/VerifyOTP.jsx";
+import CheckoutProduct from "./components/page/CheckoutProduct.jsx";
 import HomePage from "./components/page/HomePage";
-import ProductDetail from "./components/page/ProductDetail.jsx";
+import CategoryByName from "./components/page/Product/CategoryByName.jsx";
+
+import ProductDetail from "./components/page/Product/ProductDetail.jsx";
+import ProductCart from "./components/page/ProductCart.jsx";
 import RootLayout from "./components/page/RootLayout";
-import ProductCart from "./components/ProductCart.jsx";
-import theme from "./configs/MUIConfig.js";
+import ModelProvider from "./context/ModelProvider.jsx";
 import "./index.css";
-import { persistor, store } from "./redux/store.js";
+import store from "./redux/store.js";
+
+import "slick-carousel/slick/slick-theme.css";
+import "slick-carousel/slick/slick.css";
+import OrderPage from "./components/page/OrderPage/OrderPage.jsx";
+import OrderPageDetail from "./components/page/OrderPage/OrderPageDetail.jsx";
+import ProfilePage from "./components/page/Profile/ProfilePage.jsx";
+import SearchPage from "./components/page/SearchPage.jsx";
 const router = createBrowserRouter([
   {
     path: "/",
@@ -36,8 +48,16 @@ const router = createBrowserRouter([
             element: <RegisterPage />,
           },
           {
+            path: "enter-email",
+            element: <EnterEmailPage />,
+          },
+          {
             path: "/otp-verify",
-            element: <OtpVerify />,
+            element: <VerifyOTP />,
+          },
+          {
+            path: "/forgot-password",
+            element: <ForgotPasswordPage />,
           },
         ],
       },
@@ -50,8 +70,28 @@ const router = createBrowserRouter([
         element: <ProductCart />,
       },
       {
+        path: "category/:name",
+        element: <CategoryByName />,
+      },
+      {
         path: "/checkout",
         element: <CheckoutProduct />,
+      },
+      {
+        path: "/order",
+        element: <OrderPage />,
+      },
+      {
+        path: "/order/detail/:id",
+        element: <OrderPageDetail />,
+      },
+      {
+        path: "/search",
+        element: <SearchPage />,
+      },
+      {
+        path: "/Profile",
+        element: <ProfilePage />,
       },
     ],
   },
@@ -60,10 +100,9 @@ const router = createBrowserRouter([
 const root = createRoot(document.getElementById("root"));
 root.render(
   <Provider store={store}>
-    <PersistGate loading={null} persistor={persistor}>
-      <ThemeProvider theme={theme}>
-        <RouterProvider router={router} />
-      </ThemeProvider>
-    </PersistGate>
+    <ModelProvider>
+      <RouterProvider router={router} />
+      <Modal />
+    </ModelProvider>
   </Provider>
 );

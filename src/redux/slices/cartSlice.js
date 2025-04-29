@@ -3,62 +3,93 @@ import { createSlice } from "@reduxjs/toolkit";
 export const cartSlice = createSlice({
   name: "cart",
   initialState: {
-    userId: null,
     items: [],
-    totalQuantity: 0,
-    totalPrice: 0,
+    isFetching: false,
+    error: false,
+    checkedItems: {},
   },
   reducers: {
-    setCart: (state, action) => {
-      state.userId = action.payload.cart?.userId || null;
-      state.items = action.payload.cart?.items || [];
-      state.totalPrice = action.payload.cart?.totalPrice || 0;
-      state.totalQuantity = action.payload.cart?.totalQuantity || 0;
+    getCartStart: (state) => {
+      state.isFetching = true;
     },
-
-    addItem: (state, action) => {
-      console.log("Trước khi thêm:", state.items);
-      const product = action.payload;
-      const existingItem = state.items.find(
-        (item) => item.productId === product.productId
-      );
-      if (existingItem) {
-        existingItem.quantity += 1;
-        existingItem.totalPrice += product.price;
-      } else {
-        state.items.push({
-          ...product,
-          quantity: 1,
-          totalPrice: product.price,
-        });
-      }
-      state.totalQuantity += 1;
-      state.totalPrice += product.price;
-      console.log("Sau khi thêm:", state.items);
+    getCartSuccess: (state, action) => {
+      state.isFetching = false;
+      state.items = action.payload;
+      state.error = false;
     },
-    removeCart: (state, action) => {
-      const productId = action.payload;
-      const existingItem = state.items.find(
-        (item) =>String( item.productId) === String(productId)
-      );
-
-      if (existingItem) {
-        state.totalQuantity -= existingItem.quantity;
-        state.totalPrice -= existingItem.totalPrice;
-        state.items = state.items.filter(
-          (item) => item.productId !== productId
-        );
-      }
+    getCartFailed: (state) => {
+      state.isFetching = false;
+      state.error = true;
     },
-    clearCart: (state,action) => {
+    addCartStart: (state) => {
+      state.isFetching = true;
+    },
+    addCartSuccess: (state, action) => {
+      state.isFetching = false;
+      state.items = action.payload||[];
+      state.error = false;
+    },
+    addCartFailed: (state) => {
+      state.isFetching = false;
+      state.error = true;
+    },
+    removeFromCartStart: (state) => {
+      state.isFetching = true;
+    },
+    removeFromCartSuccess: (state, action) => {
+      state.isFetching = false;
+      state.items = action.payload;
+      state.error = false;
+    },
+    removeFromCartFailed: (state) => {
+      state.isFetching = false;
+      state.error = true;
+    },
+    clearCartStart: (state) => {
+      state.isFetching = true;
+      state.error = false;
+    },
+    clearCartSuccess: (state) => {
+      state.isFetching = false;
       state.items = [];
-      state.userId = action.payload?.userId || state.userId;
-      state.totalPrice = 0;
-      state.totalQuantity = 0;
+    },
+    clearCartFailed: (state) => {
+      state.isFetching = false;
+      state.error = true;
+    },
+    updateCartStart: (state) => {
+      state.isFetching = true;
+    },
+    updateCartSuccess: (state, action) => {
+      state.isFetching = false;
+      state.items = action.payload;
+    },
+    updateCartFailed: (state) => {
+      state.isFetching = false;
+      state.error = true;
+    },
+    setCheckedItems: (state, action) => {
+      state.checkedItems = action.payload;
     },
   },
 });
 
-export const { addItem, setCart ,removeCart,clearCart
+export const {
+  getCartStart,
+  getCartSuccess,
+  getCartFailed,
+  addCartStart,
+  addCartSuccess,
+  addCartFailed,
+  removeFromCartStart,
+  removeFromCartSuccess,
+  removeFromCartFailed,
+  clearCartStart,
+  clearCartSuccess,
+  clearCartFailed,
+  updateCartStart,
+  updateCartSuccess,
+  updateCartFailed,
+  setCheckedItems
 } = cartSlice.actions;
 export default cartSlice.reducer;

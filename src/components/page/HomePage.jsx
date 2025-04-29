@@ -1,14 +1,15 @@
 import Banner from "../Banner/Banner";
 import Category from "./category/category";
-import ProductList from "./ProductList/ProductList";
+import FlashSale from "./FalshSale";
+import ProductList from "./Product/ProductList";
 
 const HomePage = () => {
   return (
-    <div className="bg-black">
+    <div className=" bg-white/90">
       
       <Banner />
+      <FlashSale/>
       <Category />
-      <ProductList category="" title="Trending" />
       <ProductList category="iphone" title="iPhone" />
       <ProductList category="aw" title="Apple Watch" />
       <ProductList category="ipad" title="Ipad" />
