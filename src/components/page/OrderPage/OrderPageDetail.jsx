@@ -5,8 +5,8 @@ import { cancelOrder, getOrderById } from "../../../redux/api/orderApiRequest";
 import Button from "../../Button/Button";
 import { useModelContext } from "../../../context/ModelProvider";
 import { formatCurrency } from "../../../utils/format";
-import { createPaymentUrl } from "../../../redux/api/apiRequestPayment";
-import { QRCodeCanvas, QRCodeSVG } from "qrcode.react";
+
+
 
 const ProductDetailPage = () => {
   const navigate = useNavigate();

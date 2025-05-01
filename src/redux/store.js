@@ -8,7 +8,7 @@ import inventoryReducer  from "./slices/inventorySlice";
 import addressReducer from  "./slices/locationSlice"
 import flashSaleReducer from "./slices/flashSale"
 import paymentReducer from "./slices/paymentSlice"
-
+import commentReducer from "./slices/commentSlice"
 
 const store = configureStore({
   reducer: {
@@ -21,6 +21,7 @@ const store = configureStore({
     address: addressReducer,
     flashSale: flashSaleReducer,
     payment: paymentReducer,
+    comment: commentReducer,
   },
 });
 export default store;

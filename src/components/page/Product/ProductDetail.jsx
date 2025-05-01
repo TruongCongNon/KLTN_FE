@@ -7,6 +7,7 @@ import ProductRelated from "../Product/ProductRelated";
 import CountButton from "../../countButton/countButton";
 import StarRating from "../../Rating/StarRating";
 import { addToCart } from "../../../redux/api/cartApiRequest";
+import CommentPage from "../CommentPage/CommentPage";
 
 const ProductDetailPage = () => {
   const [count, setCount] = useState(1);
@@ -131,6 +132,7 @@ const ProductDetailPage = () => {
 
       {/* Sản phẩm liên quan */}
       <ProductRelated id={id} accessToken={null} product={productData} />
+      <CommentPage productId = {id}/>
     </div>
   );
 };

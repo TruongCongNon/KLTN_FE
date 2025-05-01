@@ -48,7 +48,7 @@ const ProductRelated = ({ id }) => {
           >
             <div className="flex items-center justify-center">
               <img
-                src={`http://localhost:5000${product.variants[0]?.images?.[0] || '/path/to/default-image.jpg'}`}
+                src={`http://localhost:5000${product.productId.images?.[0] || '/path/to/default-image.jpg'}`}
                 alt={product.productId?.name}
                 className="w-auto"
               />

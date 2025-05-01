@@ -75,7 +75,7 @@ const CategoryByName = () => {
                   {" "}
                   <img
                     alt={product.images}
-                    src={`http://localhost:5000${product.images}`}
+                    src={`http://localhost:5000${product.images[0]}`}
                     className=" h-auto hover:scale-105 w-56 duration-75 object-cover"
                   />
                 </div>

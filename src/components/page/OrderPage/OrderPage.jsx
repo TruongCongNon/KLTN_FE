@@ -32,8 +32,6 @@ const OrderPage = () => {
     }
   }, [activeId]);
 
-
-
   if (!data) {
     return <Loading />;
   }
@@ -47,17 +45,16 @@ const OrderPage = () => {
     <div className="container mx-auto px-4 py-8 max-w-7xl">
       <p className="text-3xl font-bold mb-6 text-gray-800">Đơn hàng của bạn</p>
       <div className="relative">
-        <ul className="flex justify-around items-center relative">
+        <ul className="flex justify-around items-center relative overflow-x-auto whitespace-nowrap scrollbar-hide">
           {TABS.map((tab, index) => (
             <li key={tab.id} ref={(el) => (tabRefs.current[tab.id] = el)}>
               <Link
                 to="#"
                 onClick={() => setActiveId(tab.id)}
-                className={`py-2 px-4 text-gray-600 text-lg font-medium transition-colors duration-300 ${
-                  activeId === tab.id
+                className={`py-2 px-4 min-w-max text-gray-600 text-lg font-medium transition-colors duration-300 ${activeId === tab.id
                     ? "text-indigo-600"
                     : "hover:text-indigo-500"
-                }`}
+                  }`}
               >
                 {tab.label}{" "}
                 <span className="ml-1 text-sm text-indigo-600">
@@ -76,7 +73,8 @@ const OrderPage = () => {
         {data.length > 0 ? (
           <ul className="space-y-4">
             {data
-              .filter((order) => order?.status === TABS[activeId]?.label)?.map((order) => {
+              .filter((order) => order?.status === TABS[activeId]?.label)
+              ?.map((order) => {
                 const totalPrice = order.items?.reduce(
                   (sum, item) => sum + item.productId?.price * item.quantity,
                   0
@@ -84,7 +82,7 @@ const OrderPage = () => {
                 return (
                   <li
                     key={order._id}
-                    className="p-4 bg-white rounded-lg shadow-md flex justify-between items-center"
+                    className="p-4 bg-white rounded-lg shadow-md flex flex-col md:flex-row justify-between items-start md:items-center space-y-4 md:space-y-0"
                   >
                     <div>
                       <p className="text-lg font-semibold">
@@ -104,8 +102,8 @@ const OrderPage = () => {
                       </p>
                     </div>
                     <Link
-                      to={`detail/${order._id}  `}
-                      className="text-indigo-600 hover:underline"
+                      to={`detail/${order._id}`}
+                      className="text-indigo-600 hover:underline self-end md:self-auto"
                     >
                       Xem chi tiết
                     </Link>
@@ -114,7 +112,7 @@ const OrderPage = () => {
               })}
           </ul>
         ) : (
-          <p className="text-gray-600">
+          <p className="text-gray-600 text-center">
             Không có đơn hàng nào trong trạng thái này.
           </p>
         )}
