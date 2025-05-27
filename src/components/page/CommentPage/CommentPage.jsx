@@ -8,7 +8,7 @@ const CommentPage = ({ productId }) => {
     (state) => state.comment.comments
   );
   const currentUser = useSelector((state) => state.auth.login.currentUser);
-
+console.log("comment",comments);
   const [content, setContent] = useState("");
   const [editingId, setEditingId] = useState(null);
   const [selectedId, setSelectedId] = useState(null);
@@ -59,7 +59,7 @@ const CommentPage = ({ productId }) => {
     return commentList.map((comment) => (
       <div
         key={comment._id}
-        className={`pl-${Math.min(level * 4, 12)} border-l border-gray-300 mt-4`}
+        className={`pl-${Math.min(level * 4, 12)}  border-gray-300 mt-4`}
         onClick={() => setSelectedId(comment._id)}
       >
         <p className="font-semibold">{comment.username}</p>
@@ -72,7 +72,7 @@ const CommentPage = ({ productId }) => {
                 key={idx}
                 src={`http://localhost:5000${img}`}
                 alt="cmt-img"
-                className="w-20 h-20 object-cover "
+                className="w-24 h-24 object-cover "
               />
             ))}
           </div>

@@ -13,7 +13,12 @@ export const flashSaleSlice = createSlice({
       data: [],
       isFetching: false,
       error: false,
-    }
+    },
+    buyProductFlashSale:{
+      data: null,
+      isFetching: false,
+      error: false,
+    },
   },
   reducers: {
     //all
@@ -43,7 +48,19 @@ export const flashSaleSlice = createSlice({
       state.getFlashSaleByProductId.isFetching = false;
       state.getFlashSaleByProductId.error = true;
     },
-    
+    buyProductFlashSaleStart: (state) => {
+      state.buyProductFlashSale.isFetching = true;
+      state.buyProductFlashSale.error = false;
+    },
+    buyProductFlashSaleSuccess: (state, action) => {
+      state.buyProductFlashSale.isFetching = false;
+      state.buyProductFlashSale.data = action.payload;
+      state.buyProductFlashSale.error = false;
+    },
+    buyProductFlashSaleFailed: (state) => {
+      state.buyProductFlashSale.isFetching = false;
+      state.buyProductFlashSale.error = true;
+    },
   },
 });
 
@@ -54,6 +71,9 @@ export const {
   getFlashSaleByProductIdStart,
   getFlashSaleByProductIdSuccess,
   getFlashSaleByProductIdFailed,
+  buyProductFlashSaleStart,
+  buyProductFlashSaleSuccess,
+  buyProductFlashSaleFailed,
   
 } = flashSaleSlice.actions;
 export default flashSaleSlice.reducer;

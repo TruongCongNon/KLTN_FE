@@ -18,7 +18,7 @@ export const getAllProduct = async (dispatch) => {
   try {
     const res = await API.get(`/product/all/category`);
     dispatch(getAllProductSuccess(res.data));
-    console.log(res.data)
+
   } catch (error) {
     console.log(error);
     dispatch(getAllProductFailed());
@@ -37,7 +37,7 @@ export const getProductRelated = async (dispatch, id) => {
 
   const res = await API.get(`/product/related/${id}`);
   dispatch(getProductRelatedSuccess(res.data));
-  console.log("res+data", res.data);
+
 
   dispatch(getProductRelatedFailed());
 };

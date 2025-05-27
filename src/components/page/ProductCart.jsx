@@ -85,8 +85,9 @@ const ProductCart = () => {
 
   const calculateTotal = () => {
     return localCart.reduce((total, item) => {
+      const unitPrice = item.priceSale ?? item.productId.price;
       return checkedItems[item.productId._id]
-        ? total + item.productId.price * item.quantity
+        ? total + unitPrice * item.quantity
         : total;
     }, 0);
   };
@@ -99,9 +100,7 @@ const ProductCart = () => {
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-7xl">
-      <h1 className="text-3xl font-bold mb-6 text-gray-800">
-        Giỏ hàng của bạn
-      </h1>
+      <h1 className="text-3xl font-bold mb-6 text-gray-800">Giỏ hàng của bạn</h1>
 
       <div className="bg-white shadow-lg rounded-lg overflow-hidden">
         <div className="p-4 border-b flex justify-between">
@@ -128,62 +127,71 @@ const ProductCart = () => {
         {localCart.length === 0 ? (
           <p className="p-4">Giỏ hàng trống</p>
         ) : (
-          localCart.map((item,index) => (
-            <div
-            key={item.productId?._id ||index}
-              className="flex items-center p-4 border-b hover:bg-gray-50"
-            >
-              <div className="space-x-4 flex items-center mr-5">
-                <input
-                  type="checkbox"
-                  checked={!!checkedItems[item.productId._id]}
-                  onChange={() => handleChange(item.productId._id)}
-                  className="h-4 w-4"
-                />
-                <img
-                  src={
-                    item.productId.images && item.productId.images.length > 0
-                      ? `http://localhost:5000${item.productId.images[0]}`
-                      : "/default-image.jpg" // nếu không có ảnh thì hiện ảnh mặc định
-                  }
-                  alt={item.productId.name}
-                  className="w-20 h-auto object-cover rounded-md"
-                />
-              </div>
-              <div className="flex-1">
-                <h3 className="text-lg font-semibold text-gray-800">
-                  {item.productId.name}
-                </h3>
-                <p className="text-red-600 font-medium">
-                  {formatCurrency(item.productId.price)}
-                </p>
-                <div className="flex items-center mt-2">
-                  <button
-                    onClick={() => handleDecreaseQuantity(item.productId._id)}
-                    className="px-3 py-1 border border-gray-300 rounded-md"
-                  >
-                    -
-                  </button>
-                  <span className="mx-3 text-lg">{item.quantity}</span>
-                  <button
-                    onClick={() => handleIncreaseQuantity(item.productId._id)}
-                    className="px-3 py-1 border border-gray-300 rounded-md"
-                  >
-                    +
-                  </button>
+          localCart.map((item, index) => {
+            const price = item.priceSale ?? item.productId.price;
+            const isDiscount = item.priceSale && item.priceSale < item.productId.price;
+            return (
+              <div
+                key={item.productId?._id || index}
+                className="flex items-center p-4 border-b hover:bg-gray-50"
+              >
+                <div className="space-x-4 flex items-center mr-5">
+                  <input
+                    type="checkbox"
+                    checked={!!checkedItems[item.productId._id]}
+                    onChange={() => handleChange(item.productId._id)}
+                    className="h-4 w-4"
+                  />
+                  <img
+                    src={
+                      item.productId.images && item.productId.images.length > 0
+                        ? `http://localhost:5000${item.productId.images[0]}`
+                        : "/default-image.jpg"
+                    }
+                    alt={item.productId.name}
+                    className="w-20 h-auto object-cover rounded-md"
+                  />
+                </div>
+                <div className="flex-1">
+                  <h3 className="text-lg font-semibold text-gray-800">
+                    {item.productId.name}
+                  </h3>
+                  <p className="text-red-600 font-medium">
+                    {formatCurrency(price)}
+                  </p>
+                  {isDiscount && (
+                    <p className="text-sm text-gray-400 line-through">
+                      {formatCurrency(item.productId.price)}
+                    </p>
+                  )}
+                  <div className="flex items-center mt-2">
+                    <button
+                      onClick={() => handleDecreaseQuantity(item.productId._id)}
+                      className="px-3 py-1 border border-gray-300 rounded-md"
+                    >
+                      -
+                    </button>
+                    <span className="mx-3 text-lg">{item.quantity}</span>
+                    <button
+                      onClick={() => handleIncreaseQuantity(item.productId._id)}
+                      className="px-3 py-1 border border-gray-300 rounded-md"
+                    >
+                      +
+                    </button>
+                  </div>
+                </div>
+                <div className="flex space-x-3 items-center">
+                  <p className="text-lg font-semibold text-gray-800">
+                    {formatCurrency(price * item.quantity)}
+                  </p>
+                  <TrashIcon
+                    className="h-6 w-6 cursor-pointer hover:text-red-600"
+                    onClick={() => handleRemoveItemFromCart(item.productId._id)}
+                  />
                 </div>
               </div>
-              <div className="flex space-x-3 items-center">
-                <p className="text-lg font-semibold text-gray-800">
-                  {formatCurrency(item.productId.price * item.quantity)}
-                </p>
-                <TrashIcon
-                  className="h-6 w-6 cursor-pointer hover:text-red-600"
-                  onClick={() => handleRemoveItemFromCart(item.productId._id)}
-                />
-              </div>
-            </div>
-          ))
+            );
+          })
         )}
       </div>
 
@@ -203,7 +211,7 @@ const ProductCart = () => {
           onClick={() => {
             const updatedCart = localCart.map((item) => ({
               ...item,
-              quantity: item.quantity, 
+              quantity: item.quantity,
             }));
             localStorage.setItem("updatedCart", JSON.stringify(updatedCart));
           }}

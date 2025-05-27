@@ -1,36 +1,44 @@
-// components/FlashSaleCountdown.jsx
 import { useEffect, useState } from "react";
 
 const FlashSaleCountdown = ({ endTime }) => {
-  const [timeLeft, setTimeLeft] = useState({ hours: 0, minutes: 0, seconds: 0 });
+  const calculateTimeLeft = () => {
+    const now = new Date();
+    const end = new Date(endTime);
+    const diff = end - now;
+
+    if (diff <= 0) return null;
+
+    const totalSeconds = Math.floor(diff / 1000);
+
+    const days = Math.floor(totalSeconds / (60 * 60 * 24));
+    const hours = Math.floor((totalSeconds % (60 * 60 * 24)) / (60 * 60));
+    const minutes = Math.floor((totalSeconds % (60 * 60)) / 60);
+    const seconds = totalSeconds % 60;
+
+    return { days, hours, minutes, seconds };
+  };
+
+  const [timeLeft, setTimeLeft] = useState(calculateTimeLeft());
 
   useEffect(() => {
-    const updateCountdown = () => {
-      const now = new Date().getTime();
-      const end = new Date(endTime).getTime();
-      const diff = Math.max(end - now, 0); 
+    const timer = setInterval(() => {
+      setTimeLeft(calculateTimeLeft());
+    }, 1000);
 
-      const hours = Math.floor(diff / (1000 * 60 * 60));
-      const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-      const seconds = Math.floor((diff % (1000 * 60)) / 1000);
-
-      setTimeLeft({ hours, minutes, seconds });
-    };
-
-    updateCountdown();
-    const interval = setInterval(updateCountdown, 1000);
-    return () => clearInterval(interval);
+    return () => clearInterval(timer);
   }, [endTime]);
 
+  if (!timeLeft) return <span className="text-sm text-red-500">Đã kết thúc</span>;
+
+  const { days, hours, minutes, seconds } = timeLeft;
+
   return (
-    <div className="text-sm text-gray-600 mt-1">
-      <span className="text-red-600 font-bold">
-        {String(timeLeft.hours).padStart(2, "0")}:
-        {String(timeLeft.minutes).padStart(2, "0")}:
-        {String(timeLeft.seconds).padStart(2, "0")}
-      </span>{" "}
-      để kết thúc sale
-    </div>
+    <span className="text-sm text-red-600 font-medium">
+      Còn lại {days > 0 ? `${days}d ` : ""}
+      {String(hours).padStart(2, "0")}:
+      {String(minutes).padStart(2, "0")}:
+      {String(seconds).padStart(2, "0")}
+    </span>
   );
 };
 

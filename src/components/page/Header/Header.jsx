@@ -11,7 +11,7 @@ import {
   Bars3Icon,
   XMarkIcon,
 } from "@heroicons/react/24/outline";
-import { useModelContext } from "../../../context/ModelProvider";
+
 
 import { Fragment, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -21,9 +21,10 @@ import { logOut } from "../../../redux/api/authApiRequest";
 import { getCart } from "../../../redux/api/cartApiRequest";
 import SearchPage from "../SearchPage";
 import { cartSlice } from "../../../redux/slices/cartSlice";
+import { useModelContext } from "../../../context/ModelProvider";
 
 const Header = () => {
-  const { showAlert } = useModelContext();
+  const { showAlert, showNotification } = useModelContext();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isSearch, setIsSearch] = useState(false);
   const dispatch = useDispatch();
@@ -33,7 +34,10 @@ const Header = () => {
     (state) => state.auth.login.currentUser?.accessToken
   );
   const cartItems = useSelector((state) => state.cart?.items?.items);
-
+  const currentUser = JSON.parse(localStorage.getItem("currentUser"));
+  const avatarUrl = currentUser?.images
+  ? `http://localhost:5000${currentUser.images}`
+  : "/default-avatar.png";
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen((prev) => !prev);
   };
@@ -155,12 +159,12 @@ const Header = () => {
                 className="relative p-1 text-gray-400 hover:text-white"
               >
                 <span className="sr-only">View Cart</span>
-               <div className="flex items-center"> <ShoppingBagIcon  className="h-6 w-6" aria-hidden="true"  />
-                {cartItems && cartItems.length > 0 && (
-                  <span className="absolute -top-1 -right-1 inline-flex items-center justify-center px-1.5 py-0.5 text-xs font-bold leading-none h-5 w-5 text-red-100 bg-red-600 rounded-full">
-                    {cartItems.length}
-                  </span>
-                )}</div>
+                <div className="flex items-center"> <ShoppingBagIcon className="h-6 w-6" aria-hidden="true" />
+                  {cartItems && cartItems.length > 0 && (
+                    <span className="absolute -top-1 -right-1 inline-flex items-center justify-center px-1.5 py-0.5 text-xs font-bold leading-none h-5 w-5 text-red-100 bg-red-600 rounded-full">
+                      {cartItems.length}
+                    </span>
+                  )}</div>
               </Link>
             )}
 
@@ -174,10 +178,9 @@ const Header = () => {
                       <img
                         alt="User avatar"
                         src={
-                          user.avatar ||
-                          "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
+                          avatarUrl
                         }
-                        className="size-8 rounded-full object-cover"
+                        className="size-8 rounded-full object-cover bg-white"
                       />
                     </MenuButton>
                   </div>
@@ -190,14 +193,15 @@ const Header = () => {
                     leaveFrom="transform opacity-100 scale-100"
                     leaveTo="transform opacity-0 scale-95"
                   >
-                    <MenuItems className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+                    {/* <MenuItems className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"> */}
+                    <MenuItems className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none overflow-auto max-h-[80vh] scrollbar-gutter-stable">
+
                       <MenuItem>
                         {({ active }) => (
                           <Link
                             to="/profile"
-                            className={`${
-                              active ? "bg-gray-100" : ""
-                            } block px-4 py-2 text-sm text-gray-700`}
+                            className={`${active ? "bg-gray-100" : ""
+                              } block px-4 py-2 text-sm text-gray-700`}
                           >
                             Thông tin của bạn
                           </Link>
@@ -207,9 +211,8 @@ const Header = () => {
                         {({ active }) => (
                           <Link
                             to="/order"
-                            className={`${
-                              active ? "bg-gray-100" : ""
-                            } block px-4 py-2 text-sm text-gray-700`}
+                            className={`${active ? "bg-gray-100" : ""
+                              } block px-4 py-2 text-sm text-gray-700`}
                           >
                             Đơn hàng của bạn
                           </Link>
@@ -219,9 +222,8 @@ const Header = () => {
                         {({ active }) => (
                           <button
                             onClick={handleLogOut}
-                            className={`${
-                              active ? "bg-gray-100" : ""
-                            } block w-full text-left px-4 py-2 text-sm text-red-700`}
+                            className={`${active ? "bg-gray-100" : ""
+                              } block w-full text-left px-4 py-2 text-sm text-red-700`}
                           >
                             Đăng xuất
                           </button>
@@ -279,10 +281,9 @@ const Header = () => {
                 <div className="flex items-center px-5">
                   <div className="flex-shrink-0">
                     <img
-                      className="h-10 w-10 rounded-full object-cover"
+                      className="h-10 w-10 rounded-full object-cover bg-white border-2 border-white "
                       src={
-                        user.avatar ||
-                        "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
+                        avatarUrl
                       }
                       alt="User avatar"
                     />
@@ -300,7 +301,7 @@ const Header = () => {
                   <MobileNavLink to="/profile">Thông tin của bạn</MobileNavLink>
                   <MobileNavLink to="/order">Đơn hàng của bạn</MobileNavLink>
                   <MobileActionButton onClick={handleLogOut}>
-                   <p className="text-red-600"> Đăng xuất</p>
+                    <p className="text-red-600"> Đăng xuất</p>
                   </MobileActionButton>
                 </div>
               </>

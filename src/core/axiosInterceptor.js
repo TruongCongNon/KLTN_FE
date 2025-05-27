@@ -54,7 +54,6 @@ API.interceptors.request.use(
         if (exp - now <= 20) {
           if (!isRefreshing) {
             isRefreshing = true;
-
             try {
               const newTokens = await fetchAccessTokenByRefresh(refreshToken);
               if (newTokens) {

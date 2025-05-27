@@ -26,10 +26,10 @@ export const getCart = (userId) => async (dispatch) => {
   }
 };
 
-export const addToCart = (userId, productId, quantity) => async (dispatch) => {
+export const addToCart = (userId, productId, quantity,priceSale) => async (dispatch) => {
   dispatch(addCartStart());
   try {
-    const res = await API.post("/cart/add", { userId, productId, quantity });
+    const res = await API.post("/cart/add", { userId, productId, quantity,priceSale, });
     console.log("Response from API:", res);
     dispatch(addCartSuccess(res?.data));
   } catch (error) {

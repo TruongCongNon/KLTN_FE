@@ -1,4 +1,5 @@
-const CountButton = ({ count, setCount, stock }) => {
+const CountButton = ({ count, setCount, stock, onLimitExceeded }) => {
+  console.log("stock value & type:", stock, typeof stock);
   const decrease = () => {
     setCount((prev) => {
       const num = typeof prev === "number" ? prev : parseInt(prev, 10) || 1;
@@ -9,18 +10,27 @@ const CountButton = ({ count, setCount, stock }) => {
   const increase = () => {
     setCount((prev) => {
       const num = typeof prev === "number" ? prev : parseInt(prev, 10) || 1;
-      return stock ? Math.min(num + 1, stock) : num + 1;
+      const stockNumber = Number(stock);
+  
+      console.log("📈 increase() debug — num:", num, "| stock:", stockNumber);
+  
+      if (stockNumber && num + 1 > stockNumber) {
+        console.log("❌ Giới hạn vượt quá, gọi toast!");
+        onLimitExceeded?.();
+        return num;
+      }
+  
+      return num + 1;
     });
   };
-
   const handleChange = (e) => {
-    let value = e.target.value;
-    if (value === "") return; 
-    value = parseInt(value, 10);
+    let value = parseInt(e.target.value, 10);
     if (isNaN(value) || value < 1) value = 1;
-    if (stock && value > stock) value = stock;
-    setCount(value);
-    console.log("value",value);
+    if (Number(stock) && value > Number(stock)) {
+      onLimitExceeded?.();
+      value = Number(stock);
+    }
+    setCount(value); // vẫn dùng setCount gốc
   };
 
   return (
@@ -37,7 +47,7 @@ const CountButton = ({ count, setCount, stock }) => {
         onChange={handleChange}
         value={typeof count === "number" && !isNaN(count) ? count : ""}
         min="1"
-        max={stock || 1}
+        max={Number(stock) ||1}
         className="px-3 py-2 text-gray-700 focus:outline-none w-16 text-center"
       />
       <button

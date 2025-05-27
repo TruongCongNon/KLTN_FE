@@ -64,6 +64,11 @@ li {
     --chart-5: 340 75% 55%;
   }
 }
+html {
+  overflow-y: scroll;
+  scrollbar-gutter: stable;
+}
+
 @layer base {
   * {
     @apply border-border;
@@ -84,3 +89,4 @@ li {
 .slick-dots {
   @apply absolute bottom-4 left-1/2 -translate-x-1/2;
 }
+

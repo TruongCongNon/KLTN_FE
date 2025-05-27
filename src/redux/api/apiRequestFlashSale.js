@@ -1,5 +1,8 @@
 import API from "../../core/axiosInterceptor";
 import {
+  buyProductFlashSaleFailed,
+  buyProductFlashSaleStart,
+  buyProductFlashSaleSuccess,
   getAllFlashSaleFailed,
   getAllFlashSaleStart,
   getAllFlashSaleSuccess,
@@ -11,7 +14,7 @@ import {
 export const getAllFlashSale = async (dispatch) => {
   dispatch(getAllFlashSaleStart());
   try {
-    const res = await API.get("/flashSale/");
+    const res = await API.get("/flashSale/success");
     dispatch(getAllFlashSaleSuccess(res.data));
   } catch (error) {
     console.error(
@@ -31,19 +34,19 @@ export const getFlashSaleByProductId = async (dispatch, productId) => {
     console.error("Không tìm thấy flash sale:", error);
   }
 };
-// export const createFlashSale = async (dispatch, dataFlashSale) => {
-//   dispatch(createFlashSaleStart());
-//   try {
-//     const res = await API.post("/flashSale/", dataFlashSale);
-//     dispatch(createFlashSaleSuccess(res.data));
-//   } catch (error) {
-//     console.error(
-//       "Lỗi khi gọi tao sale:",
-//       error.response?.data || error.message
-//     );
-//     dispatch(createFlashSaleFailed());
-//   }
-// };
+export const buyProductFlashSale = async (dispatch, dataBuyFlashSale) => {
+  dispatch(buyProductFlashSaleStart());
+  try {
+    const res = await API.post("/flashSale/buy", dataBuyFlashSale);
+    dispatch(buyProductFlashSaleSuccess(res.data));
+  } catch (error) {
+    console.error(
+      "Lỗi khi gọi tru sale:",
+      error.response?.data || error.message
+    );
+    dispatch(buyProductFlashSaleFailed());
+  }
+};
 
 // export const getDiscountFlashSale = async (dispatch, productId) => {
 //   dispatch(getDiscountFlashSaleStart());

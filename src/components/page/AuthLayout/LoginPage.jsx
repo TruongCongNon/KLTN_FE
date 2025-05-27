@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import { loginUser } from "../../../redux/api/authApiRequest";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
@@ -9,6 +9,7 @@ const LoginPage = () => {
   const [isShowPassword, setIsShowPassword] = useState(false);
   const dispatch = useDispatch();
   const navigate = useNavigate();
+
   const handleLogin = (e) => {
     e.preventDefault();
 
@@ -19,7 +20,8 @@ const LoginPage = () => {
 
     loginUser(newUser, dispatch, navigate);
   };
-  
+
+
   return (
     <div>
       <div className="flex-shrink flex-1 flex-col justify-center px-6 py-12 lg:px-8">
@@ -62,7 +64,7 @@ const LoginPage = () => {
                 <div className="text-sm">
                   <Link
                     to="/enter-email"
-                    className="font-semibold text-indigo-600 hover:text-indigo-500 "tabIndex={1}
+                    className="font-semibold text-indigo-600 hover:text-indigo-500 " tabIndex={1}
                   >
                     Quên mật khẩu
                   </Link>

@@ -12,11 +12,11 @@ const Category = () => {
   useEffect(() => {
     getAllCategory(dispatch);
   }, [dispatch]);
-  console.log("dataCategory", dataCategory);
+
   return (
     <div className="bg-white mt-10 lg:px-60">
       <div className="pt-5 flex justify-center items-center ">
-        <div className="mx-5  mt-5 items-center flex  xl:grid-cols-5 sm:gap-10 gap-8">
+        <div className="mx-5  mt-5 items-center flex grid-cols-2  xl:grid-cols-5 sm:gap-10 gap-3">
           {dataCategory.map((item) => (
             <div
               key={item._id}
@@ -25,7 +25,7 @@ const Category = () => {
             >
               <img
                 src={`http://localhost:5000${item?.images}`}
-                className="w-30 h-22"
+                className="sm:w-[150px] "
               />
               <p className="text-center ">{item.name}</p>
             </div>

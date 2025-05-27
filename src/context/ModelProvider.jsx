@@ -13,17 +13,29 @@ export function ModelProvider({ children }) {
     description: "",
     onConfirm: null,
   });
-const [notificationConfig,setNotificationConfig ] = useState({
-  message:"",
-  type:"",
-  isVisible:false
-})
+  const [notificationConfig, setNotificationConfig] = useState({
+    key: 0,
+    message: "",
+    type: "",
+    isVisible: false
+  })
 
-const showNotification = ({message,type})=>{
-setNotificationConfig({message,type,isVisible:true})
-setTimeout(() => setNotificationConfig((prev) => ({ ...prev, isVisible: false })), 3000);
-}
-  const showModal = (data) => { 
+  const showNotification = ({ message, type }) => {
+    setNotificationConfig((prev) => ({
+      key: prev.key + 1, // Tăng key để Notification render lại
+      message,
+      type,
+      isVisible: true,
+    }));
+
+    setTimeout(() => {
+      setNotificationConfig((prev) => ({
+        ...prev,
+        isVisible: false,
+      }));
+    }, 1000);
+  };
+  const showModal = (data) => {
     setModalConfig({ isOpen: true, data });
   };
 
@@ -32,12 +44,12 @@ setTimeout(() => setNotificationConfig((prev) => ({ ...prev, isVisible: false })
   };
 
 
-  const showAlert = ({ isOpen, title, description, onConfirm}) => {
+  const showAlert = ({ isOpen, title, description, onConfirm }) => {
     setAlertConfig({
       isOpen: true,
-      title: title || "Thông báo", 
+      title: title || "Thông báo",
       description: description || "Bạn có chắc chắn muốn thực hiện hành động này?",
-      onConfirm: onConfirm || (() => {}),
+      onConfirm: onConfirm || (() => { }),
     });
   };
 
@@ -46,11 +58,16 @@ setTimeout(() => setNotificationConfig((prev) => ({ ...prev, isVisible: false })
   };
 
   return (
-    <ModelContext.Provider value={{ modalConfig, showModal, closeModal, showAlert, closeAlert,showNotification  }}>
+    <ModelContext.Provider value={{ modalConfig, showModal, closeModal, showAlert, closeAlert, showNotification }}>
       {children}
       <AlertPage {...alertConfig} onClose={closeAlert} />
-      <Notification {...notificationConfig}/>
-    {modalConfig.isOpen && <CountButton{...modalConfig.data}/>}
+      <Notification
+        key={notificationConfig.key} // bắt buộc component mount lại
+        message={notificationConfig.message}
+        type={notificationConfig.type}
+        isVisible={notificationConfig.isVisible}
+      />
+      {modalConfig.isOpen && <CountButton{...modalConfig.data} />}
     </ModelContext.Provider>
   );
 }

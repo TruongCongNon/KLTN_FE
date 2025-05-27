@@ -4,6 +4,7 @@ import { Link, useParams } from "react-router-dom";
 import { getProductByCategoryName } from "../../../redux/api/productApiRequest";
 import { formatCurrency } from "../../../utils/format";
 import { set } from "lodash";
+import { LazyLoadImage } from "react-lazy-load-image-component";
 
 const CategoryByName = () => {
   const dispatch = useDispatch();
@@ -29,19 +30,19 @@ const CategoryByName = () => {
     activeSeries === "all"
       ? dataProductByCategoryName
       : dataProductByCategoryName.filter(
-          (p) => p.series?.toLowerCase().trim() === activeSeries
-        );
+        (p) => p.series?.toLowerCase().trim() === activeSeries
+      );
   console.log("filterSeries", filterSeries);
   return (
-    <div>
+    <div
+    >
       <div className="mt-10">
         <ul className="flex justify-center space-x-5">
           <li
-            className={`cursor-pointer pb-1 ${
-              activeSeries === "all"
+            className={`cursor-pointer pb-1 ${activeSeries === "all"
                 ? "font-semibold border-b-2 border-black"
                 : "text-gray-500"
-            }`}
+              }`}
             onClick={() => setActiveSeries("all")}
           >
             Tất cả
@@ -50,11 +51,10 @@ const CategoryByName = () => {
           {filterSeries.map((item, index) => (
             <li
               key={index}
-              className={`cursor-pointer pb-1 ${
-                activeSeries === item
+              className={`cursor-pointer pb-1 ${activeSeries === item
                   ? "font-semibold border-b-2 border-black"
                   : "text-gray-500"
-              }`}
+                }`}
               onClick={() => setActiveSeries(item)}
             >
               {item}
@@ -63,7 +63,7 @@ const CategoryByName = () => {
         </ul>
       </div>
 
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mt-5">
+      <div className="w-full flex items-center justify-center"><div className="grid grid-cols-2 lg:grid-cols-3 gap-4 mt-5  max-w-6xl">
         {filteredProducts.map((product) => {
           return (
             <div key={product._id} className="px-2">
@@ -73,10 +73,15 @@ const CategoryByName = () => {
               >
                 <div className="w-full flex items-center justify-center">
                   {" "}
-                  <img
+                  <LazyLoadImage
+                    effect="blur"
                     alt={product.images}
                     src={`http://localhost:5000${product.images[0]}`}
                     className=" h-auto hover:scale-105 w-56 duration-75 object-cover"
+                    afterLoad={() => {
+                      const spans = document.querySelectorAll(".lazy-load-image-background.blur");
+                      spans.forEach(span => span.classList.remove("blur"));
+                    }}
                   />
                 </div>
                 <h3 className="mt-4 text-xl   flex items-center justify-center text-gray-700 overflow-hidden truncate">
@@ -91,7 +96,7 @@ const CategoryByName = () => {
             </div>
           );
         })}
-      </div>
+      </div></div>
     </div>
   );
 };

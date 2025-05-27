@@ -1,40 +1,62 @@
+import { BellIcon, XMarkIcon } from "@heroicons/react/24/solid";
 import React, { useEffect, useState } from "react";
 
-const Notification = ({ message, type, isVisible }) => {
+const Notification = ({ message, type, isVisible, onClose }) => {
   const [show, setShow] = useState(isVisible);
 
   useEffect(() => {
+    setShow(isVisible);
     if (isVisible) {
-      setShow(true);
-    } else {
-      setTimeout(() => setShow(false), 300); 
+      const timeout = setTimeout(() => {
+        setShow(false);
+        onClose && onClose();
+      }, 3000);
+      return () => clearTimeout(timeout);
     }
-  }, [isVisible]);
+  }, [isVisible, message]);
 
   let bgColor = "";
-  let textColor = "";
+  let iconColor = "";
+  let textColor = "text-white";
 
   if (type === "success") {
-    bgColor = "bg-green-100 border-green-400";
-    textColor = "text-green-700";
+    bgColor = "bg-green-500";
+    iconColor = "text-green-600";
   } else if (type === "warning") {
-    bgColor = "bg-yellow-100 border-yellow-400";
-    textColor = "text-yellow-700";
+    bgColor = "bg-yellow-300 text-white";
+    iconColor = "text-yellow-300";
+    textColor = "text-white";
   } else {
-    bgColor = "bg-red-100 border-red-400";
-    textColor = "text-red-700";
+    bgColor = "bg-red-500";
+    iconColor = "text-red-600";
   }
 
   return (
-    <div className="fixed top-20 sm:right-20 right-2 z-[60]">
+    <div className="fixed top-6 right-6 z-[999]">
       {show && (
         <div
-          className={`w-96 px-4 py-3 rounded shadow-md border ${bgColor} ${textColor} transition-all duration-300 ${
-            isVisible ? "opacity-100 scale-100" : "opacity-0 scale-95"
-          }`}
-          role="alert"
+          className={`w-full sm:w-96 flex items-center gap-4 p-4 rounded-lg shadow-lg ${bgColor} ${textColor} transition-all duration-300 animate-slide-in`}
         >
-          <strong className="font-bold">{message}</strong>
+          {/* Icon trong nền tròn */}
+          <div className="rounded-full border absolute -top-5 p-2 bg-white ">
+            <BellIcon className={`h-5 w-5 ${iconColor} `} />
+          </div>
+
+          {/* Nội dung */}
+          <div className="flex-1 font-medium text-sm sm:text-base">
+            {message}
+          </div>
+
+          {/* Nút đóng */}
+          <button
+            onClick={() => {
+              setShow(false);
+              onClose && onClose();
+            }}
+            className="text-white hover:text-gray-200 transition"
+          >
+            <XMarkIcon className="w-5 h-5" />
+          </button>
         </div>
       )}
     </div>

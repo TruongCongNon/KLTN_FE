@@ -22,7 +22,12 @@ const orderSlice = createSlice({
       data: null,
       isFetching: false,
       error: false,
-    }
+    },
+    updateAddress:{
+      data: null,
+      isFetching: false,
+      error: false,
+    },
   },
   reducers: {
     addOrderStart: (state) => {
@@ -74,6 +79,19 @@ const orderSlice = createSlice({
       state.cancelOrder.isFetching = false;
       state.cancelOrder.error = true;
     },
+    updateAddressStart: (state) => {
+      state.updateAddress.isFetching = true;
+    },
+    updateAddressSuccess: (state, action) => {
+      state.updateAddress.data = action.payload;
+      state.updateAddress.isFetching = false;
+      state.updateAddress.error = false;
+    },
+    updateAddressFailed: (state) => {
+      state.updateAddress.isFetching = false;
+      state.updateAddress.error = true;
+    },
+    
   },
 });
 export const {
@@ -89,5 +107,8 @@ export const {
   cancelOrderStart,
   cancelOrderSuccess,
   cancelOrderFailed,
+  updateAddressStart,
+  updateAddressSuccess,
+  updateAddressFailed,
 } = orderSlice.actions;
 export default orderSlice.reducer;

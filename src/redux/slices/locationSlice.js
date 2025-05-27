@@ -19,7 +19,7 @@ const addressSlice = createSlice({
       state.provinces = action.payload;
     },
     getProvincesFailed: (state) => {
-      state.loading = false;
+      state.loading = false;s
       state.error = true;
     },
 

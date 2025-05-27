@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { getProductRelated } from "../../../redux/api/productApiRequest";
 import { useNavigate } from "react-router-dom";
+import { LazyLoadImage } from "react-lazy-load-image-component";
+import { formatCurrency } from "../../../utils/format";
 
 const ProductRelated = ({ id }) => {
   const navigate = useNavigate();
@@ -31,13 +33,11 @@ const ProductRelated = ({ id }) => {
     navigate(`/product/${productId}`);
   };
 
-  console.log("productRelated", productRelated);
-  console.log("productRelatedSlice", productRelatedSlice);
 
   return (
-    <div className="mx-auto max-w-2xl px-4 py-16 sm:px-6 sm:py-24 lg:max-w-7xl lg:px-8">
+    <div className="mx-auto max-w-2xl px-4 py-16 px-20 sm:py-24 lg:max-w-7xl lg:px-20">
       <h2 className="text-2xl font-bold tracking-tight text-gray-900">
-        Product Related
+        Sản phẩm liên quan
       </h2>
       <div className="mt-6 grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-4 xl:gap-x-8 cursor-pointer">
         {productRelatedSlice.map((product) => (
@@ -47,15 +47,20 @@ const ProductRelated = ({ id }) => {
             className="group relative"
           >
             <div className="flex items-center justify-center">
-              <img
-                src={`http://localhost:5000${product.productId.images?.[0] || '/path/to/default-image.jpg'}`}
+              <LazyLoadImage
+                effect="blur"
+                src={`http://localhost:5000${product?.images[0] || '/path/to/default-image.jpg'}`}
                 alt={product.productId?.name}
                 className="w-auto"
+                afterLoad={() => {
+                  const spans = document.querySelectorAll(".lazy-load-image-background.blur");
+                  spans.forEach(span => span.classList.remove("blur"));
+                }}
               />
             </div>
             <div className="mt-4 text-center">
               <div>
-                <h3 className="text-sm text-gray-700">
+                <h3 className="text-sm sm:text-lg text-gray-700">
                   <a href={product.href}>
                     <span aria-hidden="true" className="absolute inset-0" />
                     {product.name}
@@ -63,7 +68,7 @@ const ProductRelated = ({ id }) => {
                 </h3>
               </div>
               <p className="text-sm font-medium text-gray-900">
-                {console.log(product?.variants[0]?.price)}
+                {formatCurrency(product?.price)}
               </p>
             </div>
           </div>

@@ -13,6 +13,9 @@ import {
   getOrderByUSerIdFailed,
   getOrderByUSerIdStart,
   getOrderByUSerIdSuccess,
+  updateAddressFailed,
+  updateAddressStart,
+  updateAddressSuccess,
 } from "../slices/orderSlice";
 
 export const addOrder = (orderData) => async (dispatch) => {
@@ -48,16 +51,28 @@ export const getOrderById = (id) => async (dispatch) => {
     dispatch(getOrderByIdFailed());
   }
 };
-export const cancelOrder = (orderId, accessToken, navigate) => async (dispatch) => {
+export const cancelOrder =
+  (orderId, accessToken, navigate) => async (dispatch) => {
+    try {
+      dispatch(cancelOrderStart());
+      const res = await API.put(`/order/cancel/${orderId}`);
+      dispatch(cancelOrderSuccess());
+      console.log("Cancel order thành công:", res.data);
+      navigate("/order");
+    } catch (error) {
+      dispatch(cancelOrderFailed());
+      console.error("Cancel order thất bại:", error);
+      throw error;
+    }
+  };
+export const updateAddress = async (dispatch, orderId, dataAddress) => {
+  dispatch(updateAddressStart());
   try {
-    dispatch(cancelOrderStart());
-    const res = await API.put(`/order/cancel/${orderId}`);
-    dispatch(cancelOrderSuccess());
-    console.log("Cancel order thành công:", res.data);
-    navigate("/order")
+    const res = await API.put(`/order/update-address/${orderId}`,dataAddress);
+    dispatch(updateAddressSuccess(res.data));
+
+    return res.data;
   } catch (error) {
-    dispatch(cancelOrderFailed());
-    console.error("Cancel order thất bại:", error);
-    throw error;
+    dispatch(updateAddressFailed());
   }
 };

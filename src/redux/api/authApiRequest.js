@@ -32,16 +32,35 @@ export const loginUser = async (user, dispatch, navigate) => {
     dispatch(loginSuccess(res.data));
     localStorage.setItem("accessToken", res.data.accessToken);
     localStorage.setItem("refreshToken", res.data.refreshToken);
-    // Gọi API lấy giỏ hàng sau khi đăng nhập thành công
-    const userId = res.data._id;
-    const accessToken = res.data.accessToken;
-    dispatch(getCart(user._id));
-    navigate("/");
+    localStorage.setItem("role", res.data.role); // lưu vai trò
+
+    // Lưu avatar nếu có
+    if (res.data.images) {
+      localStorage.setItem(
+        "userAvatar",
+        `http://localhost:5000${res.data.images}`
+      );
+    }
+
+    // Gọi API lấy giỏ hàng nếu là người dùng
+    if (res.data.role === "user") {
+      dispatch(getCart(res.data._id));
+    }
+
+    //  PHÂN QUYỀN: Điều hướng theo vai trò
+    const role = res.data.role;
+    if (role === "user" || role === "admin") {
+      navigate("/"); 
+    } else {
+      alert("Bạn không có quyền truy cập.");
+      navigate("/login");
+    }
   } catch (error) {
     dispatch(loginFailed());
     console.error("Lỗi đăng nhập:", error);
   }
 };
+
 export const registerUser = async (user, dispatch, navigate) => {
   dispatch(registerStart());
   try {
@@ -70,17 +89,17 @@ export const sendOTP = async (email, dispatch, navigate) => {
   dispatch(sendOTPStart());
   try {
     const res = await API.post("/auth/forgot-password", { email });
-    localStorage.setItem("email",email);
+    localStorage.setItem("email", email);
     dispatch(sendOTPSuccess(res.data));
     alert("Đã gửi OTP: " + res.data.otp);
-  
+
     navigate("/otp-verify");
   } catch (error) {
     console.error("Lỗi sendOTP:", error.response?.data || error.message);
     dispatch(sendOTPFailed());
   }
 };
-export const verigyOTP = async ( email,otp, dispatch, navigate) => {
+export const verigyOTP = async (email, otp, dispatch, navigate) => {
   dispatch(verifyOTPStart());
   try {
     localStorage.getItem("email");
@@ -107,5 +126,3 @@ export const resetPassword = async (email, dataPass, dispatch, navigate) => {
     dispatch(forgotPasswordFailed());
   }
 };
-
-

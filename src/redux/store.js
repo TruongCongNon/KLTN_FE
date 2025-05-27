@@ -1,15 +1,15 @@
 import { configureStore } from "@reduxjs/toolkit";
 import authReducer from "./slices/authSlice";
 import productReducer from "./slices/productSlice";
-import  cartReducer  from "./slices/cartSlice";
+import cartReducer from "./slices/cartSlice";
 import orderReducer from "./slices/orderSlice";
-import categoryReducer from "./slices/categorySlice"; 
-import inventoryReducer  from "./slices/inventorySlice";
-import addressReducer from  "./slices/locationSlice"
-import flashSaleReducer from "./slices/flashSale"
-import paymentReducer from "./slices/paymentSlice"
-import commentReducer from "./slices/commentSlice"
-
+import categoryReducer from "./slices/categorySlice";
+import inventoryReducer from "./slices/inventorySlice";
+import addressReducer from "./slices/locationSlice";
+import flashSaleReducer from "./slices/flashSale";
+import paymentReducer from "./slices/paymentSlice";
+import commentReducer from "./slices/commentSlice";
+import userReducer from "./slices/userSlice";
 const store = configureStore({
   reducer: {
     auth: authReducer,
@@ -17,11 +17,12 @@ const store = configureStore({
     product: productReducer,
     order: orderReducer,
     category: categoryReducer,
-    inventory:inventoryReducer,
+    inventory: inventoryReducer,
     address: addressReducer,
     flashSale: flashSaleReducer,
     payment: paymentReducer,
     comment: commentReducer,
+    user: userReducer,
   },
 });
 export default store;

@@ -4,6 +4,7 @@ import { getAllProduct } from "../../redux/api/productApiRequest";
 import { formatCurrency } from "../../utils/format";
 import { useNavigate } from "react-router-dom";
 import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
+import { LazyLoadImage } from "react-lazy-load-image-component";
 const SearchPage = ({ closeSearchPage }) => {
   const dispatch = useDispatch();
   const dataAllProduct = useSelector(
@@ -69,10 +70,15 @@ const SearchPage = ({ closeSearchPage }) => {
                     onClick={() => handleProductClick(product._id)}
                     className=" mx-5 flex items-center p-3 hover:bg-gray-100 cursor-pointer"
                   >
-                    <img
+                    <LazyLoadImage
+                        effect="blur"
                       src={`http://localhost:5000${product.images[0]||"/default-image.jpg"}`}
                       alt={product.name}
                       className="w-10 h-14s object-cover rounded-lg mr-4"
+                      afterLoad={() => {
+                          const spans = document.querySelectorAll(".lazy-load-image-background.blur");
+                          spans.forEach(span => span.classList.remove("blur"));
+                        }}
                     />
                     <div>
                       <h3 className="text-lg font-semibold">{product.name}</h3>

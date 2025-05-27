@@ -46,21 +46,17 @@ const OrderPage = () => {
       <p className="text-3xl font-bold mb-6 text-gray-800">Đơn hàng của bạn</p>
       <div className="relative">
         <ul className="flex justify-around items-center relative overflow-x-auto whitespace-nowrap scrollbar-hide">
-          {TABS.map((tab, index) => (
+          {TABS.map((tab) => (
             <li key={tab.id} ref={(el) => (tabRefs.current[tab.id] = el)}>
-              <Link
-                to="#"
+              <button
                 onClick={() => setActiveId(tab.id)}
-                className={`py-2 px-4 min-w-max text-gray-600 text-lg font-medium transition-colors duration-300 ${activeId === tab.id
-                    ? "text-indigo-600"
-                    : "hover:text-indigo-500"
-                  }`}
+                className={`py-2 px-4 min-w-max text-gray-600 text-lg font-medium transition-colors duration-300 ${
+                  activeId === tab.id ? "text-indigo-600" : "hover:text-indigo-500"
+                }`}
               >
                 {tab.label}{" "}
-                <span className="ml-1 text-sm text-indigo-600">
-                  ({orderCountByStatus[index]})
-                </span>
-              </Link>
+                <span className="ml-1 text-sm text-indigo-600">({orderCountByStatus[tab.id]})</span>
+              </button>
             </li>
           ))}
           <div
@@ -74,31 +70,28 @@ const OrderPage = () => {
           <ul className="space-y-4">
             {data
               .filter((order) => order?.status === TABS[activeId]?.label)
-              ?.map((order) => {
-                const totalPrice = order.items?.reduce(
-                  (sum, item) => sum + item.productId?.price * item.quantity,
-                  0
-                );
+              .map((order) => {
+                // Tính tổng tiền: nếu có flash sale thì dùng finalPrice, ngược lại dùng giá gốc
+                const totalPrice = order.items?.reduce((sum, item) => {
+                  // ưu tiên giá flash sale (finalPrice) nếu tồn tại
+                  const unitPrice = item.finalPrice ?? item.productId?.price;
+                  return sum + unitPrice * item.quantity;
+                }, 0);
+
                 return (
                   <li
                     key={order._id}
                     className="p-4 bg-white rounded-lg shadow-md flex flex-col md:flex-row justify-between items-start md:items-center space-y-4 md:space-y-0"
                   >
                     <div>
-                      <p className="text-lg font-semibold">
-                        Đơn hàng {order._id}
-                      </p>
+                      <p className="text-lg font-semibold">Đơn hàng {order._id}</p>
                       <p className="text-gray-600">
                         Tổng tiền: {totalPrice.toLocaleString("vi-VN")} VNĐ
                       </p>
-                      <p className="text-indigo-600">
-                        Trạng thái: {order.status || "Chưa xác định"}
-                      </p>
+                      <p className="text-indigo-600">Trạng thái: {order.status || "Chưa xác định"}</p>
                       <p className="text-gray-500 text-sm">
                         Ngày đặt:{" "}
-                        {new Date(
-                          order.createdAt || Date.now()
-                        ).toLocaleDateString()}
+                        {new Date(order.createdAt || Date.now()).toLocaleDateString()}
                       </p>
                     </div>
                     <Link
@@ -112,9 +105,7 @@ const OrderPage = () => {
               })}
           </ul>
         ) : (
-          <p className="text-gray-600 text-center">
-            Không có đơn hàng nào trong trạng thái này.
-          </p>
+          <p className="text-gray-600 text-center">Không có đơn hàng nào trong trạng thái này.</p>
         )}
       </div>
     </div>
